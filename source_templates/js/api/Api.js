@@ -109,17 +109,17 @@ class Api {
             return Promise.reject(e.statusText)
         })
   }
-    getIngredients  (text)  {
-        return fetch(`/ingredients?query=${text}`, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then( e => {
-                if(e.ok) {
-                    return e.json()
-                }
-                return Promise.reject(e.statusText)
-            })
-    }
+  getIngredients  (text)  {
+      return fetch(`/ingredients?query=${text}`, {
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      })
+          .then( e => {
+              if(e.ok) {
+                  return e.json()
+              }
+              return Promise.reject(e.statusText)
+          })
+  }
 }
