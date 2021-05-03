@@ -8,18 +8,22 @@ class Unit(models.Model):
     name = models.CharField(
         max_length=127,
         unique=True,
+        blank=False,
+        null=False,
         verbose_name='Unit name',
         help_text='Ingredient measure units. Eg: gram, kilogram, spoon',
     )
     short = models.CharField(
         max_length=9,
         unique=True,
+        blank=False,
+        null=False,
         verbose_name='Unit shortened name',
         help_text='Unit shortened name. Max: 9 symbols.',
     )
 
     def __str__(self):
-        return f'Unit: {self.name}'
+        return self.name
 
 
 class Ingredient(models.Model):
@@ -48,4 +52,4 @@ class Ingredient(models.Model):
         ordering = ['name', ]
 
     def __str__(self):
-        return f'Ingredient: {self.name}'
+        return self.name
