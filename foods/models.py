@@ -38,7 +38,7 @@ class Ingredient(models.Model):
         related_name='Ingredient',
         blank=False,
         null=False,
-        verbose_name='Ingredient',
+        verbose_name='Ingredient unit',
         help_text='Unit for current Ingredient',
     )
 

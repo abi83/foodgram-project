@@ -1,0 +1,6 @@
+django-extensions
+ipython
+django-debug-toolbar      # debug
+#pytest-django==3.8.0      # test
+#pytest==5.3.5             # via pytest-django
+#coverage                  # test coverage
