@@ -1,8 +1,7 @@
-
 class Api {
-    constructor(apiUrl) {
-        this.apiUrl =  apiUrl;
-    }
+  constructor(apiUrl) {
+      this.apiUrl =  apiUrl;
+  }
   getPurchases () {
     return fetch(`/purchases`, {
       headers: {
