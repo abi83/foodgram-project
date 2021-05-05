@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class Unit(models.Model):
@@ -61,8 +64,15 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
+    title = models.CharField(max_length=255, blank=False, null=True)
+    image = models.ImageField(upload_to='recipe_images', blank=True, null=True, verbose_name='Recipe image', help_text='Image file only')
+    author = models.ForeignKey(User, on_delete=models.SET_DEFAULT,
+                               default=1)
     ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient')
-    # TODO: more fields
+    description = models.TextField(blank=True, null=True)
+    tag_breakfast = models.BooleanField(default=False)
+    tag_dinner = models.BooleanField(default=False)
+    tag_supper = models.BooleanField(default=False)
 
 
 class RecipeIngredient(models.Model):
