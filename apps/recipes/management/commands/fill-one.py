@@ -61,6 +61,7 @@ class Command(BaseCommand):
                     units_labels.append(unit_label)
                     try:
                         new_unit = Unit.objects.create(name=unit_label, short=unit_label[:9])
+                        # TODO: get_or_create!
                         units.append(new_unit)
                     except IntegrityError as error:
                         logger.warning(f'Error on unit_label: {unit_label}')

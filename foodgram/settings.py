@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # my applications
-    'foods',
+    'apps.recipes',
+    'apps.api',
 ]
 
 MIDDLEWARE = [

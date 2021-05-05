@@ -22,6 +22,11 @@ class Unit(models.Model):
         help_text='Unit shortened name. Max: 9 symbols.',
     )
 
+    class Meta:
+        verbose_name = 'Ingredient unit'
+        verbose_name_plural = 'Ingredient units'
+        ordering = ['name', ]
+
     def __str__(self):
         return self.name
 
@@ -53,3 +58,14 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Recipe(models.Model):
+    ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient')
+    # TODO: more fields
+
+
+class RecipeIngredient(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    count = models.PositiveIntegerField()
