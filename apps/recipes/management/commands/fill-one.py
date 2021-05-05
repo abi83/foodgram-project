@@ -43,18 +43,14 @@ class Command(BaseCommand):
                 encoding="utf-8") as file:
             csv_data = csv.reader(file)
             ingredients = []
-            units_labels = []
             line_number = created_counter = 0
             for line in csv_data:
-                # read data
+                # read line
                 try:
                     ingredient_name, unit_label = line
                 except ValueError as error:
                     logger.warning(error, f'on line: {line}')
                     raise ValueError(f'Fixtures file is invalid in line: {line}') from error
-                # make a unique set of units and it labels
-                if unit_label not in units_labels:
-                    units_labels.append(unit_label)
                 current_unit = Unit.objects.get_or_create(name=unit_label, short=unit_label[:9])[0]
                 # appending new ingredient
                 ingredients.append(
@@ -64,10 +60,10 @@ class Command(BaseCommand):
                     )
                 )
                 # save a set of ingredients
-                if len(ingredients) > 10:
+                if len(ingredients) >= 10:
                     try:
                         Ingredient.objects.bulk_create(ingredients)
-                        created_counter += 1
+                        created_counter += 10
                     except IntegrityError as error:
                         logger.warning(f'Error: some of ingredients in {ingredients} already exists')
                         self.stdout.write(

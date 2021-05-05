@@ -3,8 +3,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('filter/', include('apps.api.urls')),
+    path('api/v1/', include('apps.api.urls', namespace='api')),
 ]
 
-# TODO: use namespace
 # TODO: django CDN storage
