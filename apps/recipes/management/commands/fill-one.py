@@ -51,11 +51,13 @@ class Command(BaseCommand):
                 except ValueError as error:
                     logger.warning(error, f'on line: {line}')
                     raise ValueError(f'Fixtures file is invalid in line: {line}') from error
-                current_unit = Unit.objects.get_or_create(name=unit_label, short=unit_label[:9])[0]
+                if unit_label == '':
+                    unit_label = '--'
+                current_unit = Unit.objects.get_or_create(name=unit_label.lower(), short=unit_label[:9].lower())[0]
                 # appending new ingredient
                 ingredients.append(
                     Ingredient(
-                        name=ingredient_name,
+                        name=ingredient_name.lower(),
                         unit=current_unit,
                     )
                 )

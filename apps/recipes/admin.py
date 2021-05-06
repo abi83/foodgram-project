@@ -9,7 +9,7 @@ class UnitAdmin(admin.ModelAdmin):
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ('name', )
 
 
 class IngredientInline(admin.TabularInline):

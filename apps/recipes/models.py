@@ -65,7 +65,7 @@ class Ingredient(models.Model):
 
 class Recipe(models.Model):
     title = models.CharField(max_length=255, blank=False, null=True)
-    image = models.ImageField(upload_to='recipe_images', blank=True, null=True, verbose_name='Recipe image', help_text='Image file only')
+    image = models.ImageField(upload_to='recipe_images', blank=True, null=True, verbose_name='Recipe image', help_text='Image file only'    )
     author = models.ForeignKey(User, on_delete=models.SET_DEFAULT,
                                default=1)
     ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient')
@@ -73,6 +73,9 @@ class Recipe(models.Model):
     tag_breakfast = models.BooleanField(default=False)
     tag_dinner = models.BooleanField(default=False)
     tag_supper = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
 
 
 class RecipeIngredient(models.Model):
