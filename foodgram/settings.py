@@ -137,8 +137,12 @@ LOGGING = {
     },
 }
 
+gettext_noop = lambda x: x
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
+LANGUAGES = (
+    ('ru', gettext_noop('Russian')),
+)
 
 TIME_ZONE = 'UTC'
 

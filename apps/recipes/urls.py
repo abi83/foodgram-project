@@ -7,5 +7,5 @@ app_name = 'recipes'
 urlpatterns = [
     path('',
          views.IndexPage.as_view(),
-         name='ingredient-api'),
+         name='index'),
 ]

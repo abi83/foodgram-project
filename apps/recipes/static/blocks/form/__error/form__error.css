@@ -1,3 +1,6 @@
+.form__error ul li{
+    list-style-type: none;
+}
 .form__error {
     display: block;
     font-family: 'Montserrat', sans-serif;
