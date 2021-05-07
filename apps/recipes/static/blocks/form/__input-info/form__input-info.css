@@ -1,3 +1,7 @@
+.form__input-info ul li{
+    list-style-type: none;
+    margin-left: -40px;
+}
 .form__input-info {
     font-family: 'Montserrat', sans-serif;
     font-style: normal;

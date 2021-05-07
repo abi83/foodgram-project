@@ -6,7 +6,7 @@ urlpatterns = [
     # path('auth/', include("django.contrib.auth.urls")),
     path('api/v1/', include('apps.api.urls', namespace='api')),
     path('', include('apps.recipes.urls', namespace='recipes')),
-    path('user/', include('apps.users.urls', namespace='users')),
+    path('user/', include('apps.users.urls')),
 ]
 
 # TODO: django CDN storage
