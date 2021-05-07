@@ -29,7 +29,7 @@
           <div class="form__field-group">
             {{ field|add_class:"form__input" }}
             {% if field.help_text %}
-              <small id="{{ field.id_for_label }}-help" class="form-text text-muted">
+              <small id="{{ field.id_for_label }}-help" class="form__input-info">
                 {{ field.help_text|safe }}
               </small>
             {% endif %}
@@ -48,10 +48,18 @@
 
   <script>
     const usernameField = document.querySelector('[name="username"]');
+    usernameField.disabled = true;
     const emailField = document.querySelector('[name="email"]');
     emailField.addEventListener('input', (event)=> {
-      usernameField.value = emailField.value;
+        usernameField.value = emailField.value;
     })
+    const userNameHelpText = document.querySelector('#id_username-help');
+    function activateUsernameInput() {
+      document.querySelector('[name="username"]').disabled = false;
+    }
+    userNameHelpText.innerHTML = '' +
+        '<input type="checkbox" name="username-checkbox" onclick="activateUsernameInput();">' +
+        '<label for="username-checkbox" style="padding: 0 1em;">Изменить имя пользователя</label>';
   </script>
 
 {% endblock %}
