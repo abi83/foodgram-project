@@ -132,3 +132,5 @@ dmypy.json
 
 #Pycharm project files
 .idea
+
+source_templates
