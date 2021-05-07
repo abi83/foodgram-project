@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Еще одна социальная сеть. Зачем-то | Yatube{% endblock %}
+{% block header %}Последние обновления на сайте{% endblock %}
+{% block content %}
+
+      {% for recipe in recipes %}
+
+        {{ recipe.title }}
+
+      {% endfor %}
+
+{% endblock %}
