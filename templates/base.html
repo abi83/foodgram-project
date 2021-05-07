@@ -11,22 +11,15 @@
       {% endblock %}
     </title>
     {% load static %}
-  {#  <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">#}
+    <link rel="stylesheet" href="{% static 'pages/index.css' %}">
   {#  <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>#}
   </head>
   <body>
     {% include 'header.html' %}
-    <main>
-      <div class="container">
-        <h1>
-          {% block header %}
-            Foodgram | And one more social network. For food-lovers this time
-          {% endblock %}
-        </h1>
-        {% block content %}
-          <!-- Содержимое страницы -->
-        {% endblock %}
-      </div>
+    <main class="main container">
+      {% block content %}
+        <!-- Содержимое страницы -->
+      {% endblock %}
     </main>
     {% include 'footer.html' %}
   </body>
