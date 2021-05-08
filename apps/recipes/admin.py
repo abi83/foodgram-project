@@ -21,3 +21,4 @@ class IngredientInline(admin.TabularInline):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     inlines = [IngredientInline, ]
+    prepopulated_fields = {"slug": ("title",)}

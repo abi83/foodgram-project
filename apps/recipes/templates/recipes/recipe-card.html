@@ -1,6 +1,6 @@
 {% load static %}
 <div class="card" data-id="120">
-  <a href="#" class="link" target="_blank"><img src="{% static 'images/testCardImg.png' %}" alt="Какой-то текст" class="card__image"></a>
+  <a href="{% url 'recipes:recipe-detail' slug=recipe.slug %}" class="link" target="_blank"><img src="{% static 'images/testCardImg.png' %}" alt="Какой-то текст" class="card__image"></a>
   <div class="card__body">
     <a class="card__title link" href="#" target="_blank">{{ recipe.title }}</a>
     <ul class="card__items">

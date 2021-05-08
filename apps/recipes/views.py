@@ -1,10 +1,6 @@
-from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 
 from apps.recipes.models import Recipe
-
-# print(request.session.get_session_cookie_age())
-# print(request.session.get_expiry_age())
 
 
 class IndexPage(ListView):
@@ -13,3 +9,9 @@ class IndexPage(ListView):
 
     def get_queryset(self):
         return Recipe.objects.all()
+
+
+class RecipeDetail(DetailView):
+    template_name = 'recipes/recipe_detail.html'
+    context_object_name = 'recipe'
+    model = Recipe
