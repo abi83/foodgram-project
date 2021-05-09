@@ -1,16 +1,23 @@
 from django.views.generic import ListView, DetailView
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
+
 
 from apps.recipes.models import Recipe
 User = get_user_model()
 
+
 class IndexPage(ListView):
+    paginate_by = 12
     template_name = 'recipes/index.html'
     context_object_name = 'recipes'
 
     def get_queryset(self):
         return Recipe.objects.all()
+    # def get(self, *args, **kwargs):
+    #     breakpoint()
+    #     return super().get(self, *args, **kwargs)
 
 
 class RecipeDetail(DetailView):
