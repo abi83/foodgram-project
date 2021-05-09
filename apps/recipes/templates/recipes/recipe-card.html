@@ -21,6 +21,9 @@
       {% if recipe.tag_supper %}
         <li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>
       {% endif %}
+      {% if not recipe.tag_dinner and not recipe.tag_breakfast and not recipe.tag_supper %}
+        <li class="card__item"><span class="badge badge_style_blue">Любой</span></li>
+      {% endif %}
     </ul>
     <div class="card__items card__items_column">
         <p class="card__text"><span class="icon-time"></span> {{ recipe.time }}</p>

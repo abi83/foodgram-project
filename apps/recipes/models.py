@@ -101,7 +101,7 @@ class Recipe(models.Model):
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    count = models.PositiveIntegerField()
+    count = models.PositiveIntegerField(blank=True, null=True)
 
 
 @receiver(pre_delete, sender=Recipe)
