@@ -6,4 +6,4 @@ from apps.recipes.models import Recipe
 class RecipeForm(ModelForm):
     class Meta:
         model = Recipe
-        exclude = ('slug', )
+        exclude = ('slug', 'author', )

@@ -14,7 +14,6 @@
     {% block styles %}
       <link rel="stylesheet" href="">
     {% endblock %}
-  {#  <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>#}
   </head>
   <body>
     {% include 'header.html' %}
@@ -24,5 +23,8 @@
       {% endblock %}
     </main>
     {% include 'footer.html' %}
+    {% block scripts %}
+      <!-- <script src="./js/example.js"></script> -->
+    {% endblock %}
   </body>
 </html>

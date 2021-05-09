@@ -9,7 +9,8 @@ class IngredientList(generics.ListAPIView):
     serializer_class = IngredientSerializer
 
     def get(self, request, *args, **kwargs):
-        if len(request.query_params.get('query')) >= 3:
+        query = request.query_params.get('query')
+        if not query or len(query) >= 3:
             return super().get(request, *args, **kwargs)
         return Response([{'warning': 'Enter minimum 3 symbols for a hint'}, ])
 
@@ -18,8 +19,11 @@ class IngredientList(generics.ListAPIView):
         Returns a filtered queryset. A query 'foo bar' returns a queryset
         with 'foo' AND' 'bar' in the name of each ingredient
         """
-        words = self.request.query_params.get('query').split(' ')
-        db_query = Q()
-        for word in words:
-            db_query &= Q(name__contains=word.lower())
-        return Ingredient.objects.all().filter(db_query)[:30]
+        query = self.request.query_params.get('query')
+        if query:
+            words = self.request.query_params.get('query').split(' ')
+            db_query = Q()
+            for word in words:
+                db_query &= Q(name__contains=word.lower())
+            return Ingredient.objects.all().filter(db_query)[:30]
+        return Ingredient.objects.all()

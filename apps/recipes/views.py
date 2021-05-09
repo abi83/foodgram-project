@@ -26,7 +26,7 @@ class RecipeDetail(DetailView):
 
 class RecipeEdit(UpdateView):
     model = Recipe
-    template_name = 'recipes/recipe-create-update.html'
+    template_name = 'recipes/recipe-update.html'
     form_class = RecipeForm
 
 
