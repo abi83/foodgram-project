@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 
 from apps.recipes.models import Unit, Ingredient
+from foodgram.utils.progress import Progress
 
 logger = logging.getLogger('foodgram')
 
@@ -13,25 +14,6 @@ logger = logging.getLogger('foodgram')
 class Command(BaseCommand):
     help = 'Populate initial Ingredients and Units from fixtures data: ' \
            '.apps/recipes/fixtures_data/ingredients.cvs file'
-
-    def show_progress(self, progress, instance_name):
-        width = 40
-        points = int(width * progress)
-        backspaces = width - points
-        bar = ('[' + '.' * points + ' ' * backspaces + '] '
-               + str(int(progress * 100)) + ' %')
-        text = f'Populating {instance_name} '.ljust(25)
-        self.stdout.write(
-            self.style.SUCCESS(text + bar),
-            ending='\r'
-        )
-
-    def report_success(self, number, instance_name):
-        self.stdout.write(' ' * 100, ending='\r')
-        self.stdout.write(
-            self.style.SUCCESS(
-                f'Successfully created {number} {instance_name}'
-            ))
 
     def handle(self, *args, **options):
         with open(
@@ -74,5 +56,5 @@ class Command(BaseCommand):
                         )
                     ingredients = []
                 line_number += 1
-                self.show_progress(line_number/lines_count, 'Ingredients')
-        self.report_success(created_counter, 'Ingredients')
+                Progress.show_progress(line_number/lines_count, 'Ingredients')
+        Progress.report_success(created_counter, 'Ingredients')
