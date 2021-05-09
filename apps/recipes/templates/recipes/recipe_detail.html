@@ -37,7 +37,9 @@
               {% endif %}
             </p>
             </li>
-            <li class="single-card__item">  <a style="margin-left: 2.5em" href="#" class="single-card__text">Редактировать рецепт</a></li>
+            {% if recipe.author == user %}
+              <li class="single-card__item"><a style="margin-left: 2.5em" href="#" class="single-card__text">Редактировать рецепт</a></li>
+            {% endif %}
         </ul>
       </div>
       <ul class="single-card__items">

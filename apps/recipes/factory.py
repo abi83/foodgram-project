@@ -1,50 +1,32 @@
-import datetime
 import random
-
+import uuid
 import factory
-import pytz
-from django.utils.text import slugify
+from django.contrib.auth import get_user_model
 from factory import django, fuzzy
 from faker import Faker
+from PIL.ImageColor import colormap
 
-from apps.recipes.models import Recipe
-from users_api.factory import YamdbUserFactory
+from apps.recipes.models import Recipe, Ingredient, RecipeIngredient
+from apps.users.factory import UserFactory
 
-
-class CategoryFactory(django.DjangoModelFactory):
-    class Meta:
-        model = Category
-
-    name = factory.Sequence(lambda n: f'Category-{n}')
-
-    @factory.lazy_attribute
-    def slug(self):
-        return slugify(self.name)
+User = get_user_model()
 
 
-class GenreFactory(django.DjangoModelFactory):
-    class Meta:
-        model = Genre
+class RecipeFactory(django.DjangoModelFactory):
+    author = factory.SubFactory(UserFactory)
+    time = factory.fuzzy.FuzzyInteger(3, 120)
 
-    name = factory.Sequence(lambda n: f'Genre-{n}')
+    image = factory.django.ImageField(
+        filename=str(uuid.uuid1) + '.jpg',
+        width=factory.fuzzy.FuzzyInteger(100, 1500),
+        height=factory.fuzzy.FuzzyInteger(100, 1500),
+        color=factory.fuzzy.FuzzyChoice(colormap)
+    )
 
     @factory.lazy_attribute
-    def slug(self):
-        return slugify(self.name)
-
-
-class TitleFactory(django.DjangoModelFactory):
-    category = factory.SubFactory(CategoryFactory)
-
-    @factory.lazy_attribute
-    def name(self):
+    def title(self):
         fake = Faker(locale='en-US')
         return fake.catch_phrase()
-
-    @factory.lazy_attribute
-    def year(self):
-        fake = Faker()
-        return fake.year()
 
     @factory.lazy_attribute
     def description(self):
@@ -52,66 +34,36 @@ class TitleFactory(django.DjangoModelFactory):
         sentences = random.randint(2, 7)
         return ' '.join(fake.paragraphs(nb=sentences))
 
+    @factory.lazy_attribute
+    def tag_breakfast(self):
+        return Faker().pybool()
+
+    @factory.lazy_attribute
+    def tag_dinner(self):
+        return Faker().pybool()
+
+    @factory.lazy_attribute
+    def tag_supper(self):
+        return Faker().pybool()
+
     @factory.post_generation
-    def genre(self, create, extracted, **kwargs):
+    def ingredients(self, create, extracted, **kwargs):
         if not create:
             return
-
         if extracted:
-            for one_genre in extracted:
-                if random.random() < 0.3:
-                    self.genre.add(one_genre)
+            for ingredient in extracted:
+                if random.random() < 0.01:
+                    self.ingredients.add(ingredient)
 
     class Meta:
-        model = Title
+        model = Recipe
 
 
-class ReviewFactory(django.DjangoModelFactory):
-    author = factory.SubFactory(YamdbUserFactory)
-
-    score = fuzzy.FuzzyInteger(1, 10)
-
-    title = factory.SubFactory(TitleFactory)
-
-    @factory.lazy_attribute
-    def text(self):
-        fake = Faker()
-        sentences = random.randint(2, 12)
-        return ' '.join(fake.paragraphs(nb=sentences))
-
-    @factory.lazy_attribute
-    def pub_date(self):
-        fake = Faker()
-        from_date = datetime.datetime.strptime(str(self.title.year), '%Y')
-        return fake.date_time_ad(
-            start_datetime=from_date,
-            end_datetime='now',
-            tzinfo=pytz.UTC,
-        )
+class RecipeIngredientFactory(django.DjangoModelFactory):
+    recipe = factory.SubFactory(RecipeFactory)
+    ingredient = factory.SubFactory(Ingredient)
+    count = fuzzy.FuzzyInteger(1, 40)
 
     class Meta:
-        model = Review
+        model = RecipeIngredient
 
-
-class CommentsFactory(django.DjangoModelFactory):
-    author = factory.SubFactory(YamdbUserFactory)
-    review = factory.SubFactory(ReviewFactory)
-
-    @factory.lazy_attribute
-    def text(self):
-        fake = Faker()
-        sentences = random.randint(1, 5)
-        return ' '.join(fake.paragraphs(nb=sentences))
-
-    @factory.lazy_attribute
-    def pub_date(self):
-        fake = Faker()
-        from_datetime = self.review.pub_date
-        return fake.date_time_ad(
-            start_datetime=from_datetime,
-            end_datetime='now',
-            tzinfo=pytz.UTC,
-        )
-
-    class Meta:
-        model = Comment

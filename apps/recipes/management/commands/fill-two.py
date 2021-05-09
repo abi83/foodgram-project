@@ -1,17 +1,29 @@
 import logging
 import os
+import factory
+import random
 
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
+from django.contrib.auth import get_user_model
+from factory import django, fuzzy
 
-from apps.recipes.models import Recipe
+
+from apps.recipes.models import Ingredient, Recipe
+from apps.recipes.factory import RecipeFactory, RecipeIngredientFactory
+
+User = get_user_model()
 
 logger = logging.getLogger('foodgram')
 
 
 class Command(BaseCommand):
-    help = 'Populate initial Ingredients and Units from fixtures data: ' \
-           '.apps/recipes/fixtures_data/ingredients.cvs file'
+    help = 'Populate Recipes, and fill them with random count of Ingredients.'
+
+    RECIPES = 50
+
+    def add_arguments(self, parser):
+        parser.add_argument('number', nargs='?', type=int, default=self.RECIPES)
 
     def show_progress(self, progress, instance_name):
         width = 40
@@ -32,46 +44,26 @@ class Command(BaseCommand):
                 f'Successfully created {number} {instance_name}'
             ))
 
+    def populate_recipes(self, number):
+        for i in range(number):
+            self.show_progress(i / number, 'Recipes')
+            author = fuzzy.FuzzyChoice(User.objects.all())
+            RecipeFactory.create(author=author)
+        self.report_success(number, 'Recipes')
+
+    def populate_recipes_with_ingredients(self):
+        recipes = Recipe.objects.all()
+        i = 0
+        for recipe in recipes:
+            self.show_progress(i / len(recipes), 'Recipe-Ingredient')
+            for n in range(random.randint(2, 10)):
+                ingredient = fuzzy.FuzzyChoice(Ingredient.objects.all())
+                count = fuzzy.FuzzyInteger(1, 40)
+                RecipeIngredientFactory.create(recipe=recipe, ingredient=ingredient, count=count)
+            i += 1
+        self.report_success(len(recipes), 'Recipe-Ingredient')
+
     def handle(self, *args, **options):
-        with open(
-                os.getcwd() + '\\apps\\recipes\\fixtures_data\\ingredients.csv',
-                encoding="utf-8") as file:
-            lines_count = sum(1 for _ in file)
-        with open(
-                os.getcwd() + '\\apps\\recipes\\fixtures_data\\ingredients.csv',
-                encoding="utf-8") as file:
-            csv_data = csv.reader(file)
-            ingredients = []
-            line_number = created_counter = 0
-            for line in csv_data:
-                # read line
-                try:
-                    ingredient_name, unit_label = line
-                except ValueError as error:
-                    logger.warning(error, f'on line: {line}')
-                    raise ValueError(f'Fixtures file is invalid in line: {line}') from error
-                if unit_label == '':
-                    unit_label = '--'
-                current_unit = Unit.objects.get_or_create(name=unit_label.lower(), short=unit_label[:9].lower())[0]
-                # appending new ingredient
-                ingredients.append(
-                    Ingredient(
-                        name=ingredient_name.lower(),
-                        unit=current_unit,
-                    )
-                )
-                # save a set of ingredients
-                if len(ingredients) >= 10:
-                    try:
-                        Ingredient.objects.bulk_create(ingredients)
-                        created_counter += 10
-                    except IntegrityError as error:
-                        logger.warning(f'Error: some of ingredients in {ingredients} already exists')
-                        self.stdout.write(
-                            self.style.WARNING('Some of ingredients already exist'),
-                            ending='\r'
-                        )
-                    ingredients = []
-                line_number += 1
-                self.show_progress(line_number/lines_count, 'Ingredients')
-        self.report_success(created_counter, 'Ingredients')
+        number = options['number']
+        self.populate_recipes(number)
+        self.populate_recipes_with_ingredients()
