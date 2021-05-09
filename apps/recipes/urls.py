@@ -8,5 +8,6 @@ urlpatterns = [
     path('',
          views.IndexPage.as_view(),
          name='index'),
-    path('detail/<slug:slug>', views.RecipeDetail.as_view(), name='recipe-detail')
+    path('detail/<slug:slug>', views.RecipeDetail.as_view(), name='recipe-detail'),
+    path('author/<slug:username>/', views.AuthorDetail.as_view(), name='author-detail'),
 ]

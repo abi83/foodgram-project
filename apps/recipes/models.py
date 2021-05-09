@@ -74,7 +74,7 @@ class Recipe(models.Model):
     title = models.CharField(max_length=255, blank=False, null=True)
     image = models.ImageField(upload_to='recipe_images', blank=True, null=True, verbose_name='Recipe image', help_text='Image file only'    )
     slug = models.SlugField(unique=True, max_length=60, verbose_name='Recipes slug, a part of detail page URL')
-    author = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1)
+    author = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1, related_name='recipes')
     time = models.PositiveIntegerField(verbose_name='Cooking time in minutes')
     ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient')
     description = models.TextField(blank=True, null=True)

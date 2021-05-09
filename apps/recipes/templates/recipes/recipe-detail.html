@@ -6,7 +6,11 @@
 {% block content %}
 
   <div class="single-card" data-id="371" data-author="12">
-    <img src="{% static 'images/testCardImg.png' %}" alt="какой-то текст" class="single-card__image">
+    {% load thumbnail %}
+    {% thumbnail recipe.image "480x480" crop="center" upscale=True as im %}
+      <img src="{{ im.url }}" alt="Изображение {{ recipe.title }}" class="card__image" title="{{ recipe.title }}" height="480px">
+    {% endthumbnail %}
+{#    <img src="{% static 'images/testCardImg.png' %}" alt="какой-то текст" class="single-card__image">#}
     <div class="single-card__info">
       <div class="single-card__header-info">
         <h1 class="single-card__title">{{ recipe.title }}</h1>
@@ -33,16 +37,22 @@
         <p class="single-card__text"><span class="icon-time"></span> {{ recipe.time }}</p>
         <ul class="single-card__items">
             <li class="single-card__item"><p class="single-card__text"><span class="icon-user"></span>
-              {% if recipe.author.first_name and recipe.author.last_name %}
-              {{ recipe.author.first_name }} {{ recipe.author.last_name }}
-              {% else %}
-              @ {{ recipe.author.username }}
-              {% endif %}
+              <a href="{% url 'recipes:author-detail' username=recipe.author.username %}" style="color: black">
+                {% if recipe.author.first_name and recipe.author.last_name %}
+                {{ recipe.author.first_name }} {{ recipe.author.last_name }}
+                {% else %}
+                @ {{ recipe.author.username }}
+                {% endif %}
+              </a>
             </p>
             </li>
             {% if recipe.author == user %}
               <li class="single-card__item"><a style="margin-left: 2.5em" href="#" class="single-card__text">Редактировать рецепт</a></li>
             {% endif %}
+            {% if recipe.author == user %}
+              <li class="single-card__item"><a style="margin-left: 2.5em" href="#" class="single-card__text">Удалить рецепт</a></li>
+            {% endif %}
+
         </ul>
       </div>
       <ul class="single-card__items">

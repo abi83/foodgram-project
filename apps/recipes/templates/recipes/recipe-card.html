@@ -28,7 +28,7 @@
     <div class="card__items card__items_column">
         <p class="card__text"><span class="icon-time"></span> {{ recipe.time }}</p>
         <p class="card__text"><span class="icon-user"></span>
-          <a href="#" style="color: black">
+          <a href="{% url 'recipes:author-detail' username=recipe.author.username %}" style="color: black">
             {% if recipe.author.first_name and recipe.author.last_name %}
             {{ recipe.author.first_name }} {{ recipe.author.last_name }}
             {% else %}
