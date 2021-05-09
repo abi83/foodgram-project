@@ -20,5 +20,7 @@ class IngredientInline(admin.TabularInline):
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', )
+    list_filter = ('author', )
     inlines = [IngredientInline, ]
     prepopulated_fields = {"slug": ("title",)}
