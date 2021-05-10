@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Зарегистрироваться{% endblock %}
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'pages/form.css' %}">
+{% endblock %}
+{% block content %}
+
+  {% load user_filters %}
+
+  <div class="main__header">
+    <h1 class="main__title">Регистрация</h1>
+  </div>
+  <div class="form-container">
+    <form class="form" method="post" action="{% url 'signup' %}">
+      {% csrf_token %}
+      {% include 'user_form.html' %}
+      <div class="form__footer">
+        <button class="button button_style_blue">Создать аккаунт</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const usernameField = document.querySelector('[name="username"]');
+    usernameField.disabled = true;
+    const emailField = document.querySelector('[name="email"]');
+    emailField.addEventListener('input', (event)=> {
+        usernameField.value = emailField.value;
+    })
+    const userNameHelpText = document.querySelector('#id_username-help');
+    function activateUsernameInput() {
+      document.querySelector('[name="username"]').disabled = false;
+    }
+    userNameHelpText.innerHTML = '' +
+        '<input type="checkbox" name="username-checkbox" onclick="activateUsernameInput();">' +
+        '<label for="username-checkbox" style="padding: 0 1em;">Изменить имя пользователя</label>';
+  </script>
+
+{% endblock %}

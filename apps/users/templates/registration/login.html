@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Войти{% endblock %}
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'pages/form.css' %}">
+{% endblock %}
+{% block content %}
+  <div class="main__header">
+    <h1 class="main__title">Войти на сайт</h1>
+  </div>
+  <div class="form-container">
+    <form class="form" method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      {% include 'user_form.html' %}
+      <div class="form__footer">
+        <button class="button button_style_blue">Войти</button>
+        <a href="{% url 'password_reset' %}" class="form__forgot-link">Забыли пароль?</a>
+      </div>
+    </form>
+  </div>
+  <script>
+    const usernameField = document.querySelector('[name="username"]');
+    const usernameHelpText = document.createElement('small');
+    usernameHelpText.classList.add('form__input-info');
+    console.log(usernameHelpText);
+    usernameHelpText.innerText  = 'По умолчанию совпадает с email'
+    usernameField.after(usernameHelpText);
+  </script>
+
+
+{% endblock %}
