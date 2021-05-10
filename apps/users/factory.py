@@ -25,3 +25,5 @@ class UserFactory(factory.Factory):
         return slugify(self.username) + '@fake.fake'
 
     username = factory.Sequence(lambda n: f'fake_user_{n}')
+
+    #TODO: override _create method!

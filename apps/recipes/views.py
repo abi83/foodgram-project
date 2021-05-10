@@ -2,6 +2,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
+from django.urls import reverse, reverse_lazy
 
 
 from apps.recipes.models import Recipe
@@ -25,13 +26,27 @@ class RecipeDetail(DetailView):
 
 
 class RecipeEdit(UpdateView):
+    context_object_name = 'recipe'
     model = Recipe
     template_name = 'recipes/recipe-update.html'
     form_class = RecipeForm
 
 
 class RecipeCreate(CreateView):
-    pass
+    model = Recipe
+    form_class = RecipeForm
+    success_url = reverse_lazy('recipes:index')
+    template_name = 'recipes/recipe-create.html'
+
+    def post(self, request, *args, **kwargs):
+        breakpoint()
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.obj = form.save(commit=False)
+        self.obj.author = self.request.user
+        # breakpoint()
+        return super().form_valid(form)
 
 
 class AuthorDetail(DetailView):

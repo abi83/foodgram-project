@@ -71,16 +71,17 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    title = models.CharField(max_length=255, blank=False, null=True)
+    title = models.CharField(max_length=255, blank=False, null=True, verbose_name='Recipe title')
     image = models.ImageField(upload_to='recipe_images', blank=True, null=True, verbose_name='Recipe image', help_text='Image file only'    )
     slug = models.SlugField(unique=True, max_length=60, verbose_name='Recipes slug, a part of detail page URL')
     author = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1, related_name='recipes')
     time = models.PositiveIntegerField(verbose_name='Cooking time in minutes')
-    ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient')
-    description = models.TextField(blank=True, null=True)
+    ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient', blank=True)
+    description = models.TextField(blank=True, null=True, help_text='Fill out description')
     tag_breakfast = models.BooleanField(default=False)
     tag_dinner = models.BooleanField(default=False)
     tag_supper = models.BooleanField(default=False)
+    # TODO: publication date
 
     def save(self, *args, **kwargs):
         """
@@ -97,12 +98,23 @@ class Recipe(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        # verbose_name = 'Recipe ingredient'
+        # verbose_name_plural = 'Recipe ingredients'
+        ordering = ['title', ]
+
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     count = models.PositiveIntegerField(blank=True, null=True)
+    # TODO: minimal validator(0)
 
+
+class Favorite(models.Model):
+    #Unicconstrait, unictogether
+
+    pass
 
 @receiver(pre_delete, sender=Recipe)
 def delete_image(instance, **kwargs):

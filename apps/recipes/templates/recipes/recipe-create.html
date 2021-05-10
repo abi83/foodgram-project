@@ -7,12 +7,13 @@
 {% block content %}
 {% load user_filters %}
   <div class="main__header">
-    <h1 class="main__title">Редактирование рецепта</h1>
+      <h1 class="main__title">Создание рецепта</h1>
   </div>
   <div class="form-container">
-    <form class="form" method="post" action="{% url 'recipes:recipe-edit' slug=recipe.slug %}">
+    <form class="form" method="post" action="{% url 'recipes:recipe-create' %}" enctype="multipart/form-data">
       {% csrf_token %}
       {% include 'recipes/recipe-form.html' %}
+{#      {% include 'user_form.html' %}#}
       <div class="form__footer">
         <button class="button button_style_blue">Сохранить</button>
         <a style="margin-left: 2.5em" href="#" class="form__ingredient-link">Удалить</a>
