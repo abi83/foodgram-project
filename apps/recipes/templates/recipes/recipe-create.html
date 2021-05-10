@@ -10,7 +10,7 @@
       <h1 class="main__title">Создание рецепта</h1>
   </div>
   <div class="form-container">
-    <form class="form" method="post" action="{% url 'recipes:recipe-create' %}" enctype="multipart/form-data">
+    <form class="form" method="post" action="{% url 'recipes:recipe-create' %}" enctype="multipart/form-data" autocomplete="off">
       {% csrf_token %}
       {% include 'recipes/recipe-form.html' %}
 {#      {% include 'user_form.html' %}#}

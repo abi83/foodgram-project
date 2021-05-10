@@ -20,18 +20,19 @@
         </div>
       </div>
       <ul class="single-card__items">
-        {% if recipe.tag_dinner %}
-          <li class="single-card__item"><span class="badge badge_style_green">Обед</span></li>
+        {% if recipe.tag_lunch %}
+          <li class="card__item"><span class="badge badge_style_green">Обед</span></li>
         {% endif %}
         {% if recipe.tag_breakfast %}
-        <li class="single-card__item"><span class="badge badge_style_orange">Завтрак</span></li>
+          <li class="card__item"><span class="badge badge_style_orange">Завтрак</span></li>
         {% endif %}
-        {% if recipe.tag_supper %}
-        <li class="single-card__item"><span class="badge badge_style_purple">Ужин</span></li>
+        {% if recipe.tag_dinner %}
+          <li class="card__item"><span class="badge badge_style_purple">Ужин</span></li>
         {% endif %}
-        {% if not recipe.tag_dinner and not recipe.tag_breakfast and not recipe.tag_supper %}
+        {% if not recipe.tag_dinner and not recipe.tag_breakfast and not recipe.tag_lunch %}
           <li class="card__item"><span class="badge badge_style_blue">Любой</span></li>
         {% endif %}
+        {#  TODO: put in includes    #}
       </ul>
       <div class="single-card__items single-card__items_column">
         <p class="single-card__text"><span class="icon-time"></span> {{ recipe.time }}</p>

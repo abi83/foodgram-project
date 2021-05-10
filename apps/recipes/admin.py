@@ -15,11 +15,12 @@ class IngredientAdmin(admin.ModelAdmin):
 class IngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 1
-    raw_id_fields = ('ingredient', )
+    # raw_id_fields = ('ingredient', )
 
 
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
+    readonly_fields = ('pub_date', )
     list_display = ('title', 'author', )
     list_filter = ('author', )
     inlines = [IngredientInline, ]

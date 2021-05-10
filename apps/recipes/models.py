@@ -79,9 +79,9 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient', blank=True)
     description = models.TextField(blank=True, null=True, help_text='Fill out description')
     tag_breakfast = models.BooleanField(default=False)
+    tag_lunch = models.BooleanField(default=False, verbose_name='Обед')
     tag_dinner = models.BooleanField(default=False)
-    tag_supper = models.BooleanField(default=False)
-    # TODO: publication date
+    pub_date = models.DateTimeField(verbose_name='Дата публикации', auto_now_add=True, )
 
     def save(self, *args, **kwargs):
         """
@@ -101,7 +101,7 @@ class Recipe(models.Model):
     class Meta:
         # verbose_name = 'Recipe ingredient'
         # verbose_name_plural = 'Recipe ingredients'
-        ordering = ['title', ]
+        ordering = ['-pub_date', ]
 
 
 class RecipeIngredient(models.Model):
