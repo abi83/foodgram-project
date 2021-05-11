@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
   <div class="main__header">
-    <h1 class="main__title">Все рецепты</h1>
+    <h1 class="main__title">{{ page_title }}</h1>
     {% include 'recipes/tags-list.html' %}
   </div>
   <div class="card-list">
@@ -20,4 +20,22 @@
     {% if paginator.num_pages > 1 %}
       {% include 'paginator.html' with items=recipes %}
     {% endif %}
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/components/MainCards.js' %}"></script>
+
+  <script src="{% static 'js/components/Purchases.js' %}"></script>
+  <script src="{% static 'js/components/Favorites.js' %}"></script>
+
+
+  <script src="{% static 'js/config/config.js' %}"></script>
+  <script src="{% static 'js/components/CardList.js' %}"></script>
+  <script src="{% static 'js/components/Header.js' %}"></script>
+
+  <script src="{% static 'js/api/Api.js' %}"></script>
+  {% if user.is_authenticated %}
+  <script src="{% static 'js/indexAuth.js' %}"></script>
+  {% else %}
+  <script src="{% static 'js/indexNotAuth.js' %}"></script>
+  {% endif %}
 {% endblock %}

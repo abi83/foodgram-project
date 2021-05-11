@@ -1,59 +1,90 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import ModelFormMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ImproperlyConfigured
 
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-# from django.core.paginator import Paginator
 from django.urls import reverse_lazy
 
 
 from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
-# from apps.recipes.forms import RecipeForm
 User = get_user_model()
 
 
 class BaseRecipeList(ListView):
+    """
+    A base class for recipes list classes: IndexPage, Author's page
+    Favorites page
+    """
     context_object_name = 'recipes'
     paginate_by = 12
-    template_name = None
+    template_name = 'recipes/recipes-list.html'
+    page_title = None
 
     def get_queryset(self):
         """
         Annotate with favorite mark, select related authors.
         """
         # self.request.GET.get('tag')
-        return Recipe.objects.annotate_with_favorite_prop(user_id=self.request.user.id).select_related('author')
+        return (Recipe.objects
+                .annotate_with_favorite_prop(user_id=self.request.user.id)
+                .select_related('author'))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Adding a 'page_title' to context
+        """
+        if self._get_page_title is None:
+            raise ImproperlyConfigured(
+                f'"page_title" attribute of {self.__class__.__name__}'
+                f' cannot be None')
+        kwargs.update({'page_title': self._get_page_title})
+        return super().get_context_data(**kwargs)
+
+    @property
+    def _get_page_title(self):
+        return self.page_title
 
 
 class IndexPage(BaseRecipeList):
-    template_name = 'recipes/recipes-list.html'
+    """
+    A view for index page
+    """
+    page_title = 'Recipes'
 
 
 class AuthorRecipes(BaseRecipeList):
-    template_name = 'recipes/recipes-list.html'
-    some_text = 'Some text'
-
+    """
+    A view for author's recipes page
+    """
     def get_queryset(self):
-        qs = super(AuthorRecipes, self).get_queryset()
-        return qs.filter(author=self.get_user)
+        return (super(AuthorRecipes, self)
+                .get_queryset()
+                .filter(author=self.get_user))
 
     @property
     def get_user(self):
         return get_object_or_404(User, username=self.kwargs.get('username'))
 
+    @property
+    def _get_page_title(self):
+        return self.get_user.get_full_name()
+
 
 class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
-    """List of current user's favorite Recipes."""
-    # page_title = 'Избранное'
+    """List of current user's favorite recipes."""
     template_name = 'recipes/recipes-list.html'
+    page_title = 'Favorites'
 
     def get_queryset(self):
-        """Display favorite recipes only."""
-        qs = super().get_queryset()
-        qs = qs.filter(liked_users__user=self.request.user)
+        """
+        Favorite recipes for current user only
+        """
+        return (super()
+                .get_queryset()
+                .filter(liked_users__user=self.request.user))
 
-        return qs
 
 class RecipeDetail(DetailView):
     template_name = 'recipes/recipe-detail.html'
@@ -70,7 +101,6 @@ class RecipeEdit(UpdateView):
 
 class RecipeCreate(CreateView):
     model = Recipe
-    # form_class = RecipeForm
     success_url = reverse_lazy('recipes:index')
     template_name = 'recipes/recipe-create.html'
     fields = ('title', 'time', 'description', 'image',)
