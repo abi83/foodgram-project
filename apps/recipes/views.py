@@ -1,9 +1,11 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import ModelFormMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from django.core.paginator import Paginator
-from django.urls import reverse, reverse_lazy
+# from django.core.paginator import Paginator
+from django.urls import reverse_lazy
 
 
 from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
@@ -11,14 +13,47 @@ from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
 User = get_user_model()
 
 
-class IndexPage(ListView):
-    paginate_by = 12
-    template_name = 'recipes/index.html'
+class BaseRecipeList(ListView):
     context_object_name = 'recipes'
+    paginate_by = 12
+    template_name = None
 
     def get_queryset(self):
-        return Recipe.objects.all()
+        """
+        Annotate with favorite mark, select related authors.
+        """
+        # self.request.GET.get('tag')
+        return Recipe.objects.annotate_with_favorite_prop(user_id=self.request.user.id).select_related('author')
 
+
+class IndexPage(BaseRecipeList):
+    template_name = 'recipes/recipes-list.html'
+
+
+class AuthorRecipes(BaseRecipeList):
+    template_name = 'recipes/recipes-list.html'
+    some_text = 'Some text'
+
+    def get_queryset(self):
+        qs = super(AuthorRecipes, self).get_queryset()
+        return qs.filter(author=self.get_user)
+
+    @property
+    def get_user(self):
+        return get_object_or_404(User, username=self.kwargs.get('username'))
+
+
+class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
+    """List of current user's favorite Recipes."""
+    # page_title = 'Избранное'
+    template_name = 'recipes/recipes-list.html'
+
+    def get_queryset(self):
+        """Display favorite recipes only."""
+        qs = super().get_queryset()
+        qs = qs.filter(liked_users__user=self.request.user)
+
+        return qs
 
 class RecipeDetail(DetailView):
     template_name = 'recipes/recipe-detail.html'
@@ -51,11 +86,11 @@ class RecipeCreate(CreateView):
         self.object.tag_lunch = 'lunch' in self.request.POST
         self.object.tag_dinner = 'dinner' in self.request.POST
         self.object = form.save()
-        """
-            'nameIngredient_1': ['курдючное сало'], 'valueIngredient_1': ['200'], 'unitsIngredient_1': ['г'],
-            'nameIngredient_3': ['вишня засахаренная кондитерская'], 'valueIngredient_3': ['2'], 'unitsIngredient_3': ['шт.'],
-        """
         for key in self.request.POST:
+            # POST data example:
+            #   'nameIngredient_1': ['...'], 'valueIngredient_1': ['200'],
+            #   'unitsIngredient_1': ['г'], 'nameIngredient_3': ['...'],
+            #   'valueIngredient_3': ['2'], 'unitsIngredient_3': ['шт.'],
             if 'nameIngredient' in key:
                 i = key.split('_')[1]
                 value = self.request.POST.get('valueIngredient_' + i)
@@ -65,19 +100,4 @@ class RecipeCreate(CreateView):
                     count=int(value)
                 )
         return super(ModelFormMixin, self).form_valid(form)
-
-
-class AuthorDetail(DetailView):
-    template_name = 'recipes/author-page.html'
-    context_object_name = 'author'
-    model = User
-
-    def get_queryset(self):
-        return User.objects.filter(is_active=True) #.select_related('recipes')
-
-    def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset()
-        username = self.kwargs.get('username')
-        author = get_object_or_404(queryset, username=username)
-        return author
+    #TODO: reformat recipe form-templates

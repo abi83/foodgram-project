@@ -6,7 +6,7 @@ from faker import Faker
 User = get_user_model()
 
 
-class UserFactory(factory.Factory):
+class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
@@ -25,5 +25,3 @@ class UserFactory(factory.Factory):
         return slugify(self.username) + '@fake.fake'
 
     username = factory.Sequence(lambda n: f'fake_user_{n}')
-
-    #TODO: override _create method!

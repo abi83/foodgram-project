@@ -7,6 +7,8 @@ from rest_framework.response import Response
 
 class IngredientList(generics.ListAPIView):
     serializer_class = IngredientSerializer
+    # filter_backends = None
+    # TODO: create custom filter backend
 
     def get(self, request, *args, **kwargs):
         query = request.query_params.get('query')
