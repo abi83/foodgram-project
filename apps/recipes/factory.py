@@ -39,12 +39,13 @@ class RecipeFactory(django.DjangoModelFactory):
         return Faker().pybool()
 
     @factory.lazy_attribute
-    def tag_dinner(self):
+    def tag_lunch(self):
         return Faker().pybool()
 
     @factory.lazy_attribute
-    def tag_supper(self):
+    def tag_dinner(self):
         return Faker().pybool()
+
 
     @factory.post_generation
     def ingredients(self, create, extracted, **kwargs):

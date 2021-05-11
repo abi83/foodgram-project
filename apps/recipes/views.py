@@ -7,6 +7,8 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.core.paginator import Paginator
+from django.db.models import Q
+
 
 
 from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
@@ -27,10 +29,19 @@ class BaseRecipeList(ListView):
         """
         Annotate with favorite mark, select related authors.
         """
-        # self.request.GET.get('tag')
-        return (Recipe.objects
-                .annotate_with_favorite_prop(user_id=self.request.user.id)
-                .select_related('author'))
+        # http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
+        query_set = (Recipe.objects
+            .annotate_with_favorite_prop(user_id=self.request.user.id)
+            .select_related('author'))
+        tags = self.request.GET.get('tags')
+        if tags is None:
+            return query_set
+
+        db_query = Q()
+        for tag in tags.split(','):
+            db_query &= Q(**{tag: True})
+
+        return query_set.filter(db_query)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """
