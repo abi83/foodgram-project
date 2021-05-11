@@ -13,16 +13,9 @@
       {% include 'recipes/recipe-card.html' %}
     {% endfor %}
   </div>
-    Page:{{ paje_obj }}
-    Paginator:{{ paginator }}
-
-{#  paginator: {{ paginator }}#}
-{#  page_obj.paginator {{ page_obj.paginator }}#}
-{#  page_obj.paginator.num_pages: {{ page_obj.paginator.num_pages }}#}
-{#  page_obj.has_next {{ page_obj.has_next }}#}
-    {% if paginator.num_pages > 1 %}
-      {% include 'paginator.html' with items=recipes %}
-    {% endif %}
+  {% if page_obj.has_other_pages %}
+    {% include 'paginator.html' with page_obj=page_obj %}
+  {% endif %}
 {% endblock %}
 {% block scripts %}
   <script src="{% static 'js/components/MainCards.js' %}"></script>

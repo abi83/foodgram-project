@@ -1,14 +1,14 @@
 <nav class="pagination" aria-label="Search results pages">
   <ul class="pagination__container">
-    {% if items.has_previous %}
+    {% if page_obj.has_previous %}
       <li class="pagination__item">
-        <a class="pagination__link link" href="?page={{ items.previous_page_number }}"><span class="icon-left"></span></a>
+        <a class="pagination__link link" href="?page={{ page_obj.previous_page_number }}"><span class="icon-left"></span></a>
       </li>
       <li class="pagination__item">
         <a class="pagination__link link" href="?page=1&{{ currently_selected_tags_query }}">1</a>
       </li>
-      {% if items.number > 2 %}
-        {% if items.number > 3 %}
+      {% if page_obj.number > 2 %}
+        {% if page_obj.number > 3 %}
           <li class="pagination__item">...</li>
         {% endif %}
         <li class="pagination__item">
@@ -19,12 +19,12 @@
     <li class="pagination__item pagination__item_active">
       <a class="pagination__link link" href="#">{{ page_obj.number }}</a>
     </li>
-    {% if items.has_next %}
-      {% if items.number|add:'1' < page_obj.paginator.num_pages %}
+    {% if page_obj.has_next %}
+      {% if page_obj.number|add:'1' < page_obj.paginator.num_pages %}
         <li class="pagination__item">
           <a class="pagination__link link" href="?page={{ page_obj.number|add:'1' }}">{{ page_obj.number|add:'1' }}</a>
         </li>
-        {% if items.number|add:'2' < page_obj.paginator.num_pages %}
+        {% if page_obj.number|add:'2' < page_obj.paginator.num_pages %}
           <li class="pagination__item">...</li>
         {% endif %}
       {% endif %}
@@ -32,7 +32,7 @@
         <a class="pagination__link link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
       </li>
       <li class="pagination__item">
-        <a class="pagination__link link" href="?page={{ items.next_page_number }}"><span class="icon-right"></span></a>
+        <a class="pagination__link link" href="?page={{ page_obj.next_page_number }}"><span class="icon-right"></span></a>
       </li>
     {% endif %}
   </ul>
