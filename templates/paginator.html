@@ -1,0 +1,39 @@
+<nav class="pagination" aria-label="Search results pages">
+  <ul class="pagination__container">
+    {% if page_obj.has_previous %}
+      <li class="pagination__item">
+        <a class="pagination__link link" href="?page={{ page_obj.previous_page_number }}"><span class="icon-left"></span></a>
+      </li>
+      <li class="pagination__item">
+        <a class="pagination__link link" href="?page=1&">1</a>
+      </li>
+      {% if page_obj.number > 2 %}
+        {% if page_obj.number > 3 %}
+          <li class="pagination__item">...</li>
+        {% endif %}
+        <li class="pagination__item">
+          <a class="pagination__link link" href="?page={{ page_obj.number|add:'-1' }}">{{ page_obj.number|add:'-1' }}</a>
+        </li>
+      {% endif %}
+    {% endif %}
+    <li class="pagination__item pagination__item_active">
+      <a class="pagination__link link" href="#">{{ page_obj.number }}</a>
+    </li>
+    {% if page_obj.has_next %}
+      {% if page_obj.number|add:'1' < page_obj.paginator.num_pages %}
+        <li class="pagination__item">
+          <a class="pagination__link link" href="?page={{ page_obj.number|add:'1' }}">{{ page_obj.number|add:'1' }}</a>
+        </li>
+        {% if page_obj.number|add:'2' < page_obj.paginator.num_pages %}
+          <li class="pagination__item">...</li>
+        {% endif %}
+      {% endif %}
+      <li class="pagination__item">
+        <a class="pagination__link link" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+      </li>
+      <li class="pagination__item">
+        <a class="pagination__link link" href="?page={{ page_obj.next_page_number }}"><span class="icon-right"></span></a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>

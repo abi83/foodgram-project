@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+{% block content %}
+  <div class="main__header">
+    <h1 class="main__title">{{ page_title }}</h1>
+    <ul class="tags">
+      <li class="tags__item">
+        <p id="tag_breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="#"></p>
+        <span class="tags__label">Завтрак</span>
+      </li>
+      <li class="tags__item">
+        <p id="tag_lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="#"></p>
+        <span for="lunch" class="tags__label">Обед</span>
+      </li>
+      <li class="tags__item">
+        <p id="tag_dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="#"></p>
+        <label for="dinner" class="tags__label">Ужин</label>
+      </li>
+    </ul>
+  </div>
+  <div class="card-list">
+    {% for recipe in recipes %}
+      {% include 'recipes/recipe-card.html' %}
+    {% endfor %}
+  </div>
+  {% if page_obj.has_other_pages %}
+    {% include 'paginator.html' with page_obj=page_obj %}
+  {% endif %}
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/components/MainCards.js' %}"></script>
+
+  <script src="{% static 'js/components/Purchases.js' %}"></script>
+  <script src="{% static 'js/components/Favorites.js' %}"></script>
+
+
+  <script src="{% static 'js/config/config.js' %}"></script>
+  <script src="{% static 'js/components/CardList.js' %}"></script>
+  <script src="{% static 'js/components/Header.js' %}"></script>
+
+  <script src="{% static 'js/api/Api.js' %}"></script>
+  <script src="{% static 'js/tagFilter.js' %}"></script>
+
+  {% if user.is_authenticated %}
+  <script src="{% static 'js/indexAuth.js' %}"></script>
+  {% else %}
+  <script src="{% static 'js/indexNotAuth.js' %}"></script>
+  {% endif %}
+{% endblock %}
