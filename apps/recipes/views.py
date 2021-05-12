@@ -28,20 +28,20 @@ class BaseRecipeList(ListView):
     def get_queryset(self):
         """
         Annotate with favorite mark, select related authors.
+        Filter by tag_breakfast, tag_lunch, tag_dinner
         """
         # http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
         query_set = (Recipe.objects
             .annotate_with_favorite_prop(user_id=self.request.user.id)
             .select_related('author'))
-        tags = self.request.GET.get('tags')
+        tags = self.request.GET.get('tags', None)
         if tags is None:
             return query_set
-
-        db_query = Q()
+        filter_query = Q()
         for tag in tags.split(','):
-            db_query &= Q(**{tag: True})
-
-        return query_set.filter(db_query)
+            if tag in ['tag_breakfast', 'tag_lunch', 'tag_dinner']:
+                filter_query.add(Q(**{tag: True}), Q.OR)
+        return query_set.filter(filter_query)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """
