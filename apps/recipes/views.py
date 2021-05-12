@@ -106,16 +106,40 @@ class RecipeDetail(DetailView):
     model = Recipe
 
 
-class RecipeEdit(UpdateView, LoginRequiredMixin):
+class RecipeIngredientSaveMixin:
+    @staticmethod
+    def add_ingredients_to_recipe(request_data, recipe):
+        for key in request_data:
+            # POST data example:
+            #   'nameIngredient_1': ['...'], 'valueIngredient_1': ['200'],
+            #   'unitsIngredient_1': ['г'], 'nameIngredient_3': ['...'],
+            #   'valueIngredient_3': ['2'], 'unitsIngredient_3': ['шт.'],
+            # TODO: use bulk create!
+            if 'nameIngredient' in key:
+                i = key.split('_')[1]
+                print('i: ', i)
+                value = request_data.get('valueIngredient_' + i)
+                RecipeIngredient.objects.create(
+                    recipe=recipe,
+                    ingredient=Ingredient.objects.get(name=request_data.get(key)),
+                    count=int(value)
+                )
+
+
+class RecipeEdit(UpdateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
     context_object_name = 'recipe'
     model = Recipe
     template_name = 'recipes/recipe-update.html'
-    # fields = ('title', 'time', 'description', 'image',)
-    # success_url = reverse_lazy('recipes:recipe-detail', kwargs={'slug':'exclusive-multi-tasking-contingency-2021-05-09'})  #  TODO detail page
     form_class = RecipeForm
 
+    def form_valid(self, form):
+        self.object = form.save()
+        RecipeIngredient.objects.filter(recipe=self.object).delete()
+        self.add_ingredients_to_recipe(self.request.POST, self.object)
+        return super(ModelFormMixin, self).form_valid(form)
 
-class RecipeCreate(CreateView, LoginRequiredMixin):
+
+class RecipeCreate(CreateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
     model = Recipe
     success_url = reverse_lazy('recipes:index')
     template_name = 'recipes/recipe-create.html'
@@ -132,18 +156,6 @@ class RecipeCreate(CreateView, LoginRequiredMixin):
         self.object.tag_lunch = 'lunch' in self.request.POST
         self.object.tag_dinner = 'dinner' in self.request.POST
         self.object = form.save()
-        for key in self.request.POST:
-            # POST data example:
-            #   'nameIngredient_1': ['...'], 'valueIngredient_1': ['200'],
-            #   'unitsIngredient_1': ['г'], 'nameIngredient_3': ['...'],
-            #   'valueIngredient_3': ['2'], 'unitsIngredient_3': ['шт.'],
-            if 'nameIngredient' in key:
-                i = key.split('_')[1]
-                value = self.request.POST.get('valueIngredient_' + i)
-                RecipeIngredient.objects.create(
-                    recipe=self.object,
-                    ingredient=Ingredient.objects.get(name=self.request.POST.get(key)),
-                    count=int(value)
-                )
+        self.add_ingredients_to_recipe(self.request.POST, self.object)
         return super(ModelFormMixin, self).form_valid(form)
     #TODO: reformat recipe form-templates

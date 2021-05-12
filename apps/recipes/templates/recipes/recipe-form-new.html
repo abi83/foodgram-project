@@ -43,9 +43,10 @@
         <div class="form__field-item-ingredient" id="ing_{{ ingredient.id }}">
           <span> {{ relation.ingredient.name|capfirst }} {{ relation.count }} {{ relation.ingredient.unit.short }}.</span>
           <span class="form__field-item-delete"></span>
-          <input id="nameIngredient_{{ forloop.counter }}" name="nameIngredient_{{ forloop.counter }}" type="hidden" value="{{ relation.ingredient.name }}">
-          <input id="valueIngredient_{{ forloop.counter }}" name="valueIngredient_{{ forloop.counter }}" type="hidden" value="{{ relation.count }}">
-          <input id="unitsIngredient_{{ forloop.counter }}" name="unitsIngredient_{{ forloop.counter }}" type="hidden" value="{{ relation.ingredient.unit.short }}.">
+          <input id="nameIngredient_{{ forloop.counter|add:'100' }}" name="nameIngredient_{{ forloop.counter|add:'100' }}" type="hidden" value="{{ relation.ingredient.name }}">
+          <input id="valueIngredient_{{ forloop.counter|add:'100' }}" name="valueIngredient_{{ forloop.counter|add:'100' }}" type="hidden" value="{{ relation.count }}">
+          <input id="unitsIngredient_{{ forloop.counter|add:'100' }}" name="unitsIngredient_{{ forloop.counter|add:'100' }}" type="hidden" value="{{ relation.ingredient.unit.short }}.">
+{#          TODO: remove this dirty hack!!!#}
         </div>
       {% endfor %}
     </div>

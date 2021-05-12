@@ -10,7 +10,7 @@
     <h1 class="main__title">Редактирование рецепта</h1>
   </div>
   <div class="form-container">
-    <form class="form" method="post" enctype="multipart/form-data" action="{% url 'recipes:recipe-edit' slug=recipe.slug %}">
+    <form class="form" method="post" enctype="multipart/form-data" action="{% url 'recipes:recipe-edit' slug=recipe.slug %}" autocomplete="off">
 {#      todo: DRY!#}
       {% csrf_token %}
       {% include 'recipes/recipe-form-new.html' %}
