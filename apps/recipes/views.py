@@ -12,6 +12,7 @@ from django.db.models import Q
 
 from apps.recipes.paginator import FixedPaginator
 from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
+from apps.recipes.forms import RecipeForm
 User = get_user_model()
 
 
@@ -105,22 +106,24 @@ class RecipeDetail(DetailView):
     model = Recipe
 
 
-class RecipeEdit(UpdateView):
+class RecipeEdit(UpdateView, LoginRequiredMixin):
     context_object_name = 'recipe'
     model = Recipe
     template_name = 'recipes/recipe-update.html'
-    # form_class = RecipeForm
+    # fields = ('title', 'time', 'description', 'image',)
+    # success_url = reverse_lazy('recipes:recipe-detail', kwargs={'slug':'exclusive-multi-tasking-contingency-2021-05-09'})  #  TODO detail page
+    form_class = RecipeForm
 
 
-class RecipeCreate(CreateView):
+class RecipeCreate(CreateView, LoginRequiredMixin):
     model = Recipe
     success_url = reverse_lazy('recipes:index')
     template_name = 'recipes/recipe-create.html'
     fields = ('title', 'time', 'description', 'image',)
 
-    def post(self, request, *args, **kwargs):
+    # def post(self, request, *args, **kwargs):
         # breakpoint()
-        return super().post(request, *args, **kwargs)
+        # return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         self.object = form.save(commit=False)

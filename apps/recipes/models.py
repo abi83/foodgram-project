@@ -9,8 +9,7 @@ from django.dispatch import receiver
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator
 from django.db.models import Exists, OuterRef
-
-
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -92,9 +91,9 @@ class Recipe(models.Model):
     time = models.PositiveIntegerField(verbose_name='Cooking time in minutes', validators=[MinValueValidator(1)])
     ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient', blank=True)
     description = models.TextField(blank=True, null=True, help_text='Fill out description')
-    tag_breakfast = models.BooleanField(default=False)
-    tag_lunch = models.BooleanField(default=False, verbose_name='Обед')
-    tag_dinner = models.BooleanField(default=False)
+    tag_breakfast = models.BooleanField(default=False, verbose_name='Breakfast', help_text='Select if this recipe is suitable for breakfast')
+    tag_lunch = models.BooleanField(default=False, verbose_name='Lunch', help_text='Select if this recipe is suitable for lunch')
+    tag_dinner = models.BooleanField(default=False, verbose_name='Dinner', help_text='Select if this recipe is suitable for dinner')
     pub_date = models.DateTimeField(verbose_name='Дата публикации', auto_now_add=True, )
     is_active = models.BooleanField(default=True)
 
@@ -111,6 +110,9 @@ class Recipe(models.Model):
         except IntegrityError:
             self.slug = slugify(self.title + str(date.today()) + str(uuid.uuid1())[:8])
             super(Recipe, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('recipes:recipe-detail', args=[self.slug, ])
 
     def __str__(self):
         return self.title
