@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 
 
-
+from apps.recipes.paginator import FixedPaginator
 from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
 User = get_user_model()
 
@@ -21,6 +21,7 @@ class BaseRecipeList(ListView):
     Favorites page
     """
     context_object_name = 'recipes'
+    paginator_class = FixedPaginator
     paginate_by = 12
     template_name = 'recipes/recipes-list.html'
     page_title = None
