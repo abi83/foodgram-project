@@ -130,7 +130,7 @@ class RecipeIngredientSaveMixin:
 class RecipeEdit(UpdateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
     context_object_name = 'recipe'
     model = Recipe
-    template_name = 'recipes/recipe-update-new.html'
+    template_name = 'recipes/recipe-update.html'
     form_class = RecipeForm
 
     def form_valid(self, form):

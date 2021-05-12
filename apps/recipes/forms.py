@@ -5,7 +5,7 @@ from apps.recipes.models import Recipe
 
 class RecipeForm(forms.ModelForm):
     # ingredients = RecipeIngredientForm
-
+    # TODO: validate minimum one tag is checked
     class Meta:
         model = Recipe
         exclude = ('slug', 'author', )
