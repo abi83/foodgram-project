@@ -11,6 +11,7 @@
   </div>
   <div class="form-container">
     <form class="form" method="post" enctype="multipart/form-data" action="{% url 'recipes:recipe-edit' slug=recipe.slug %}">
+{#      todo: DRY!#}
       {% csrf_token %}
       {% include 'recipes/recipe-form-new.html' %}
       <div class="form__footer">
