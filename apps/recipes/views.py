@@ -108,28 +108,29 @@ class RecipeDetail(DetailView):
 
 class RecipeIngredientSaveMixin:
     @staticmethod
-    def add_ingredients_to_recipe(request_data, recipe):
-        for key in request_data:
-            # POST data example:
-            #   'nameIngredient_1': ['...'], 'valueIngredient_1': ['200'],
-            #   'unitsIngredient_1': ['г'], 'nameIngredient_3': ['...'],
-            #   'valueIngredient_3': ['2'], 'unitsIngredient_3': ['шт.'],
-            # TODO: use bulk create!
-            if 'nameIngredient' in key:
-                i = key.split('_')[1]
-                print('i: ', i)
-                value = request_data.get('valueIngredient_' + i)
-                RecipeIngredient.objects.create(
-                    recipe=recipe,
-                    ingredient=Ingredient.objects.get(name=request_data.get(key)),
-                    count=int(value)
-                )
+    def add_ingredients_to_recipe(request_data: dict, recipe):
+        ingredients = Ingredient.objects.filter(name__in=[
+            value for key, value in request_data.items()
+            if 'nameIngredient' in key
+        ])
+        values = [request_data.get('valueIngredient_' + key.split('_')[1])
+                  for key in request_data
+                  if 'nameIngredient' in key]
+        objs = [RecipeIngredient(
+            recipe=recipe,
+            ingredient=ingredient,
+            count=value,
+            )
+            for ingredient, value in zip(ingredients, values)
+        ]
+
+        RecipeIngredient.objects.bulk_create(objs)
 
 
 class RecipeEdit(UpdateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
     context_object_name = 'recipe'
     model = Recipe
-    template_name = 'recipes/recipe-update.html'
+    template_name = 'recipes/recipe-update-new.html'
     form_class = RecipeForm
 
     def form_valid(self, form):
@@ -143,11 +144,9 @@ class RecipeCreate(CreateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
     model = Recipe
     success_url = reverse_lazy('recipes:index')
     template_name = 'recipes/recipe-create.html'
-    fields = ('title', 'time', 'description', 'image',)
+    form_class = RecipeForm
 
-    # def post(self, request, *args, **kwargs):
-        # breakpoint()
-        # return super().post(request, *args, **kwargs)
+    # fields = ('title', 'time', 'description', 'image',)
 
     def form_valid(self, form):
         self.object = form.save(commit=False)

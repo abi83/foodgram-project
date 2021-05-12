@@ -10,12 +10,12 @@
     <h1 class="main__title">Редактирование рецепта</h1>
   </div>
   <div class="form-container">
-    <form class="form" method="post" enctype="multipart/form-data" action="{% url 'recipes:recipe-edit' slug=recipe.slug %}" autocomplete="off">
+    <form class="form" method="post" action="{% url 'recipes:recipe-edit' slug=recipe.slug %}" enctype="multipart/form-data" autocomplete="off">
 {#      todo: DRY!#}
       {% csrf_token %}
-      {% include 'recipes/recipe-form-new.html' %}
+      {% include 'recipes/recipe-form.html' %}
       <div class="form__footer">
-        <button class="button button_style_blue">Сохранить</button>
+        <button class="button button_style_blue">Изменить</button>
         <a style="margin-left: 2.5em" href="#" class="form__ingredient-link">Удалить</a>
       </div>
     </form>

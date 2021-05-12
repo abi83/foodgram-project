@@ -89,7 +89,7 @@ class Recipe(models.Model):
     slug = models.SlugField(unique=True, max_length=60, verbose_name='Recipes slug, a part of detail page URL')
     author = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1, related_name='recipes')
     time = models.PositiveIntegerField(verbose_name='Cooking time in minutes', validators=[MinValueValidator(1)])
-    ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient', blank=True)
+    ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient', blank=True, help_text='Fill out some ingredients and it"s values')
     description = models.TextField(blank=True, null=True, help_text='Fill out description')
     tag_breakfast = models.BooleanField(default=False, verbose_name='Breakfast', help_text='Select if this recipe is suitable for breakfast')
     tag_lunch = models.BooleanField(default=False, verbose_name='Lunch', help_text='Select if this recipe is suitable for lunch')
