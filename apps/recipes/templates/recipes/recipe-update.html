@@ -2,5 +2,5 @@
 {% block title %}Изменение рецепта{% endblock %}
 {% block header %}Редактирование рецепта{% endblock %}
 {% block button %} Изменить {% endblock %}
-{% block delete %}<a style="margin-left: 2.5em" href="#" class="form__ingredient-link">Удалить</a>{% endblock %}
+{% block delete %}<a style="margin-left: 2.5em" href="{% url 'recipes:recipe-delete' slug=recipe.slug %}" class="form__ingredient-link">Удалить</a>{% endblock %}
 {% block formlink %}{% url 'recipes:recipe-edit' slug=recipe.slug %}{% endblock %}

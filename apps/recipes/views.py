@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.views.generic.edit import ModelFormMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ImproperlyConfigured
@@ -123,10 +123,9 @@ class RecipeIngredientSaveMixin:
             )
             for ingredient, value in zip(ingredients, values)
         ]
-
         RecipeIngredient.objects.bulk_create(objs)
 
-
+# TODO: confirmation if user have rights to change recipe!
 class RecipeEdit(UpdateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
     context_object_name = 'recipe'
     model = Recipe
@@ -146,8 +145,6 @@ class RecipeCreate(CreateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
     template_name = 'recipes/recipe-create.html'
     form_class = RecipeForm
 
-    # fields = ('title', 'time', 'description', 'image',)
-
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
@@ -157,4 +154,10 @@ class RecipeCreate(CreateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
         self.object = form.save()
         self.add_ingredients_to_recipe(self.request.POST, self.object)
         return super(ModelFormMixin, self).form_valid(form)
-    #TODO: reformat recipe form-templates
+
+
+class RecipeDelete(DeleteView, LoginRequiredMixin):
+    model = Recipe
+    success_url = reverse_lazy('recipes:index')
+    template_name_suffix = '-confirm-delete'
+

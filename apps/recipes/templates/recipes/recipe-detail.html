@@ -10,7 +10,6 @@
     {% thumbnail recipe.image "480x480" crop="center" upscale=True as im %}
       <img src="{{ im.url }}" alt="Изображение {{ recipe.title }}" class="card__image" title="{{ recipe.title }}" height="480px">
     {% endthumbnail %}
-{#    <img src="{% static 'images/testCardImg.png' %}" alt="какой-то текст" class="single-card__image">#}
     <div class="single-card__info">
       <div class="single-card__header-info">
         <h1 class="single-card__title">{{ recipe.title }}</h1>
@@ -32,7 +31,6 @@
         {% if not recipe.tag_dinner and not recipe.tag_breakfast and not recipe.tag_lunch %}
           <li class="card__item"><span class="badge badge_style_blue">Любой</span></li>
         {% endif %}
-        {#  TODO: put in includes    #}
       </ul>
       <div class="single-card__items single-card__items_column">
         <p class="single-card__text"><span class="icon-time"></span> {{ recipe.time }}</p>
@@ -49,9 +47,7 @@
             </li>
             {% if recipe.author == user %}
               <li class="single-card__item"><a style="margin-left: 2.5em" href="{% url 'recipes:recipe-edit' slug=recipe.slug %}" class="single-card__text">Редактировать рецепт</a></li>
-            {% endif %}
-            {% if recipe.author == user %}
-              <li class="single-card__item"><a style="margin-left: 2.5em" href="#" class="single-card__text">Удалить рецепт</a></li>
+              <li class="single-card__item"><a style="margin-left: 2.5em" href="{% url 'recipes:recipe-delete' slug=recipe.slug %}" class="single-card__text">Удалить рецепт</a></li>
             {% endif %}
 
         </ul>
@@ -74,7 +70,6 @@
       <div class="single-card__section">
         <h3 class="single-card__section-title">Описание:</h3>
         <p class=" single-card__section-text">{{ recipe.description|linebreaksbr }}</p>
-{#        <p class=" single-card__section-text">Полить сверху сиропом топинамбура и украсить ягодами.</p>#}
       </div>
     </div>
   </div>
