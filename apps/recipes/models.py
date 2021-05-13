@@ -73,7 +73,7 @@ class Ingredient(models.Model):
         return self.name
 
 
-class RecipeManager(models.Manager):
+class RecipeQuerySet(models.QuerySet):
     def annotate_with_favorite_prop(self, user_id: int):
         return self.annotate(is_favorite=Exists(
             Favorite.objects.filter(
@@ -97,7 +97,7 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField(verbose_name='Дата публикации', auto_now_add=True, )
     is_active = models.BooleanField(default=True)
 
-    objects = RecipeManager()
+    objects = RecipeQuerySet.as_manager()
 
     def save(self, *args, **kwargs):
         """
@@ -124,7 +124,7 @@ class Recipe(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_ingredients')
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     count = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(1)])
 

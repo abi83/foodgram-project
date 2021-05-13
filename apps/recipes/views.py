@@ -1,22 +1,33 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.views.generic.edit import ModelFormMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ImproperlyConfigured
-
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.core.paginator import Paginator
-from django.db.models import Q
+from django.views.generic import (ListView, DetailView, CreateView,
+                                  UpdateView, DeleteView)
+from django.views.generic.edit import ModelFormMixin
 
-
-from apps.recipes.paginator import FixedPaginator
-from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
 from apps.recipes.forms import RecipeForm
+from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
+from apps.recipes.paginator import FixedPaginator
+
 User = get_user_model()
 
 
-class BaseRecipeList(ListView):
+class AuthorAndFavoriteMixin:
+    def get_queryset(self):
+        """
+        Annotate with favorite mark, select related authors.
+        """
+        query_set = super().get_queryset()
+        return (query_set
+                .select_related('author')
+                .annotate_with_favorite_prop(user_id=self.request.user.id)
+                )
+
+
+class BaseRecipeList(AuthorAndFavoriteMixin, ListView):
     """
     A base class for recipes list classes: IndexPage, Author's page
     Favorites page
@@ -26,16 +37,14 @@ class BaseRecipeList(ListView):
     paginate_by = 12
     template_name = 'recipes/recipes-list.html'
     page_title = None
+    model = Recipe
 
     def get_queryset(self):
         """
-        Annotate with favorite mark, select related authors.
         Filter by tag_breakfast, tag_lunch, tag_dinner
         """
         # http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
-        query_set = (Recipe.objects
-            .annotate_with_favorite_prop(user_id=self.request.user.id)
-            .select_related('author'))
+        query_set = super().get_queryset()
         tags = self.request.GET.get('tags', None)
         if tags is None:
             return query_set
@@ -100,13 +109,19 @@ class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
                 .filter(liked_users__user=self.request.user))
 
 
-class RecipeDetail(DetailView):
+class RecipeDetail(AuthorAndFavoriteMixin, DetailView):
     template_name = 'recipes/recipe-detail.html'
     context_object_name = 'recipe'
     model = Recipe
 
+    def get_queryset(self):
+        """
+        Select related ingredients
+        """
+        return super().get_queryset().prefetch_related('recipe_ingredients__ingredient')
 
-class RecipeIngredientSaveMixin:
+
+class RecipeIngredientSaveMixin(LoginRequiredMixin):
     @staticmethod
     def add_ingredients_to_recipe(request_data: dict, recipe):
         ingredients = Ingredient.objects.filter(name__in=[
@@ -125,8 +140,14 @@ class RecipeIngredientSaveMixin:
         ]
         RecipeIngredient.objects.bulk_create(objs)
 
-# TODO: confirmation if user have rights to change recipe!
-class RecipeEdit(UpdateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
+
+class RecipeRightsCheckMixin(UserPassesTestMixin):
+    def test_func(self):
+        return (self.request.user.is_superuser
+                or self.request.user == self.get_object().author)
+
+
+class RecipeEdit(RecipeRightsCheckMixin, RecipeIngredientSaveMixin, UpdateView):
     context_object_name = 'recipe'
     model = Recipe
     template_name = 'recipes/recipe-update.html'
@@ -139,7 +160,7 @@ class RecipeEdit(UpdateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
         return super(ModelFormMixin, self).form_valid(form)
 
 
-class RecipeCreate(CreateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
+class RecipeCreate(RecipeIngredientSaveMixin, CreateView):
     model = Recipe
     success_url = reverse_lazy('recipes:index')
     template_name = 'recipes/recipe-create.html'
@@ -156,8 +177,7 @@ class RecipeCreate(CreateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
         return super(ModelFormMixin, self).form_valid(form)
 
 
-class RecipeDelete(DeleteView, LoginRequiredMixin):
+class RecipeDelete(LoginRequiredMixin, RecipeRightsCheckMixin, DeleteView):
     model = Recipe
     success_url = reverse_lazy('recipes:index')
     template_name_suffix = '-confirm-delete'
-

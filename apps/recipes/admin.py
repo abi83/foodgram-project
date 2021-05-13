@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.recipes.models import Unit, Ingredient, RecipeIngredient, Recipe
+from apps.recipes.models import Unit, Ingredient, RecipeIngredient, Recipe, Favorite
 
 
 @admin.register(Unit)
@@ -25,3 +25,8 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('author', )
     inlines = [IngredientInline, ]
     prepopulated_fields = {"slug": ("title",)}
+
+
+@admin.register(Favorite)
+class FavoriteAdmon(admin.ModelAdmin):
+    pass

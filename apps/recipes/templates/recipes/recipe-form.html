@@ -23,12 +23,13 @@
         <label for="{{ form.tag_dinner.auto_id }}" class="tags__label">{{ form.tag_dinner.label }}</label>
       </div>
     </div>
-    <span class="form__info-text" style="margin-bottom: 0;">Выберите один или несколько тэгов</span>
-    <span class="form__error"></span>
+    <span class="form__input-info" style="margin-bottom: 0;">Выберите один или несколько тэгов</span>
+    <span class="form__error">{{ form.tag_breakfast.errors }}</span>
   </div>
 </div>
 <div class="form__group">
   <label for="nameIngredient" class="form__label">Ингредиенты</label>
+  <span style="color: red;">*</span>
   <div class="form__field-group">
     <div class="form__field-group-ingredientes">
       <div class="form__dropdown">
@@ -38,9 +39,9 @@
       <input type="number" id="cantidad" class="form__input" min="0">
       <label for="cantidad" class="form__label" id="cantidadVal">шт.</label>
     </div>
-    <span class="form__info-text" style="margin-bottom: 0;">Выберите ингредиент и количество</span>
+    <span class="form__input-info" style="margin-bottom: 0;">Начните писать ингредиент для выбора. Укажите количество и добавьте в список</span>
     <div class="form__field-group-ingredientes-container">
-      {% for relation in recipe.recipeingredient_set.all %}
+      {% for relation in recipe.recipe_ingredients.all %}
         <div class="form__field-item-ingredient" id="ing_{{ relation.id }}">
           <span> {{ relation.ingredient.name|capfirst }} {{ relation.count }} {{ relation.ingredient.unit.short }}.</span>
           <span class="form__field-item-delete"></span>
@@ -68,7 +69,7 @@
   <div class="form__field-group">
     {{ form.description }}
     <span class="form__error">{{ form.description.errors }}</span>
-    <span class="form__info-text">Напишите яркое описание</span>
+    <span class="form__input-info">Напишите яркое описание</span>
   </div>
 </div>
 <div class="form__group">

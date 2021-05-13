@@ -1,6 +1,6 @@
 {% load thumbnail %}
 {% load static %}
-<div class="card" data-id="120">
+<div class="card" data-id="{{ recipe.slug }}">
   <a href="{% url 'recipes:recipe-detail' slug=recipe.slug %}" class="link" target="_blank">
     {% load thumbnail %}
     {% thumbnail recipe.image "365x240" crop="center" upscale=True as im %}
@@ -36,5 +36,14 @@
   </div>
   <div class="card__footer">
     <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+    {% if user.is_authenticated %}
+      <button class="button button_style_none" name="favorites" data-out>
+      {% if recipe.is_favorite %}
+        <span class="icon-favorite icon-favorite_active"></span>
+      {% else %}
+        <span class="icon-favorite"></span>
+      {% endif %}
+      </button>
+    {% endif %}
   </div>
 </div>

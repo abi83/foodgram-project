@@ -4,8 +4,17 @@ from apps.recipes.models import Recipe
 
 
 class RecipeForm(forms.ModelForm):
-    # ingredients = RecipeIngredientForm
-    # TODO: validate minimum one tag is checked
+    def clean(self):
+        cleaned_data = super().clean()
+        tag_breakfast = cleaned_data.get('tag_breakfast')
+        tag_lunch = cleaned_data.get('tag_lunch')
+        tag_dinner = cleaned_data.get('tag_dinner')
+
+        if not (tag_breakfast or tag_lunch or tag_dinner):
+            msg = 'Check at least one tag'
+            self.add_error('tag_breakfast', msg)
+
+    # TODO: validate minimum one ingredient is checked
     class Meta:
         model = Recipe
         exclude = ('slug', 'author', )
