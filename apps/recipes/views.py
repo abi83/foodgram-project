@@ -15,7 +15,21 @@ from apps.recipes.paginator import FixedPaginator
 User = get_user_model()
 
 
-class BaseRecipeList(ListView):
+class AnnotateWithFavoritesMixin:
+    def get_queryset(self):
+        """
+        Annotate with favorite mark, select related authors.
+        """
+        print('AnnotateWithFavoritesMixin')
+        # query_set = super().get_queryset()
+        # query_set = Recipe.objects.all()
+        # print('AnnotateWithFavoritesMixin2')
+        return (Recipe.objects
+                .annotate_with_favorite_prop(user_id=self.request.user.id)
+                .select_related('author'))
+
+
+class BaseRecipeList(AnnotateWithFavoritesMixin, ListView):
     """
     A base class for recipes list classes: IndexPage, Author's page
     Favorites page
@@ -28,13 +42,15 @@ class BaseRecipeList(ListView):
 
     def get_queryset(self):
         """
-        Annotate with favorite mark, select related authors.
         Filter by tag_breakfast, tag_lunch, tag_dinner
         """
         # http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
-        query_set = (Recipe.objects
-            .annotate_with_favorite_prop(user_id=self.request.user.id)
-            .select_related('author'))
+        # query_set = (Recipe.objects
+        #     .annotate_with_favorite_prop(user_id=self.request.user.id)
+        #     .select_related('author'))
+        print('BaseRecipeList')
+        query_set = super().get_queryset()
+        # query_set = Recipe.objects.all()
         tags = self.request.GET.get('tags', None)
         if tags is None:
             return query_set
@@ -99,10 +115,11 @@ class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
                 .filter(liked_users__user=self.request.user))
 
 
-class RecipeDetail(DetailView):
+class RecipeDetail(AnnotateWithFavoritesMixin, DetailView):
     template_name = 'recipes/recipe-detail.html'
     context_object_name = 'recipe'
     model = Recipe
+    #TODO: annotate with favorite data
 
 
 class RecipeIngredientSaveMixin(LoginRequiredMixin):
