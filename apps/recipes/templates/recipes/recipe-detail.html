@@ -54,7 +54,7 @@
       <div class="single-card__section">
         <h3 class="single-card__section-title">Ингридиенты:</h3>
         <div class="single-card__items single-card__items_column">
-          {% for relation in recipe.recipeingredient_set.all %}
+          {% for relation in recipe.recipe_ingredients.all %}
             <p class=" single-card__section-item">
               {{ relation.ingredient.name }} - {{ relation.count }}
               {{ relation.ingredient.unit.short }}.

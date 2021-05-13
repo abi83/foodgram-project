@@ -41,7 +41,7 @@
     </div>
     <span class="form__input-info" style="margin-bottom: 0;">Начните писать ингредиент для выбора. Укажите количество и добавьте в список</span>
     <div class="form__field-group-ingredientes-container">
-      {% for relation in recipe.recipeingredient_set.all %}
+      {% for relation in recipe.recipe_ingredients.all %}
         <div class="form__field-item-ingredient" id="ing_{{ relation.id }}">
           <span> {{ relation.ingredient.name|capfirst }} {{ relation.count }} {{ relation.ingredient.unit.short }}.</span>
           <span class="form__field-item-delete"></span>
