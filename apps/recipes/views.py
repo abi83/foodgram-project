@@ -125,7 +125,14 @@ class RecipeIngredientSaveMixin:
         ]
         RecipeIngredient.objects.bulk_create(objs)
 
+
 # TODO: confirmation if user have rights to change recipe!
+# class models.Permission. Very basic logic. Not specific for request.user
+# has_perm(perm, obj=None). From User-side logic
+# The PermissionRequiredMixin mixin. For view-side logic! Our choice!
+# UserPassesTestMixin - more flexible mixin
+# https://docs.djangoproject.com/en/3.2/topics/auth/default/
+
 class RecipeEdit(UpdateView, LoginRequiredMixin, RecipeIngredientSaveMixin):
     context_object_name = 'recipe'
     model = Recipe
