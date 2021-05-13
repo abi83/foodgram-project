@@ -8,11 +8,6 @@ from . import views
 app_name = 'api'
 urlpatterns = [
     path('ingredients/', views.IngredientList.as_view(), name='ingredient-api'),
-]
-
-router = DefaultRouter()
-router.register(prefix='favorites', viewset=views.FavoritesApi, basename='users')
-
-urlpatterns += [
-    path('', include(router.urls)),
+    path('favorites/', views.FavoritesApi.as_view(), name='favorites-api',),
+    path('favorites/<slug:recipe_slug>', views.FavoritesApi.as_view(), name='favorites-api', ),
 ]

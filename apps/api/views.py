@@ -1,12 +1,14 @@
 from django.db.models import Q
-from rest_framework import generics, mixins, viewsets
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, mixins, viewsets, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.urlpatterns import format_suffix_patterns
 
 
 from apps.api.serializers import IngredientSerializer, FavoriteSerializer
-from apps.recipes.models import Ingredient, Favorite
+from apps.recipes.models import Ingredient, Favorite, Recipe
 
 
 class IngredientList(generics.ListAPIView):
@@ -36,35 +38,12 @@ class IngredientList(generics.ListAPIView):
         return Ingredient.objects.all()
 
 
-# class FavoritesApi(generics.CreateAPIView, mixins.DestroyModelMixin):
-#     pass
+class FavoritesApi(generics.CreateAPIView, generics.DestroyAPIView):
+    def post(self, request, *args, **kwargs):
+        recipe = Recipe.objects.get(slug=request.data.get('recipe_slug'))
+        Favorite.objects.get_or_create(user=request.user, recipe=recipe)
+        return Response({'status': 'successfully created'}, status=status.HTTP_201_CREATED)
 
-class FavoritesApi(
-    # generics.GenericAPIView,
-    # viewsets.ViewSetMixin,
-    mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin,
-    # mixins.ListModelMixin,
-    # mixins.UpdateModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
-    """
-    Endpoint for creating or deleting Favorite instance
-    """
-    queryset = Favorite.objects.all()
-    serializer_class = FavoriteSerializer
-    http_method_names = ['delete', 'post', 'head', 'options', 'get',]
-    permission_classes = [AllowAny,
-                          # IsAuthenticated,
-                          ]
-
-    def create(self, request, *args, **kwargs):
-
-        # breakpoint()
-        return super().create(request, *args, **kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        pk = kwargs.get('pk')
-        breakpoint()
-        return super().destroy(request, *args, **kwargs)
+    def delete(self, request, *args, **kwargs):
+        get_object_or_404(Favorite, recipe__slug=kwargs.get('recipe_slug')).delete()
+        return Response({'status': 'successfully deleted'}, status=status.HTTP_200_OK)
