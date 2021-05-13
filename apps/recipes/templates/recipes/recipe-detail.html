@@ -41,7 +41,7 @@
               </a>
             </p>
             </li>
-            {% if recipe.author == user %}
+            {% if recipe.author == user or user.is_superuser %}
               <li class="single-card__item"><a style="margin-left: 2.5em" href="{% url 'recipes:recipe-edit' slug=recipe.slug %}" class="single-card__text">Редактировать рецепт</a></li>
               <li class="single-card__item"><a style="margin-left: 2.5em" href="{% url 'recipes:recipe-delete' slug=recipe.slug %}" class="single-card__text">Удалить рецепт</a></li>
             {% endif %}
