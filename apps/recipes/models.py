@@ -52,6 +52,7 @@ class Ingredient(models.Model):
         max_length=200,
         unique=True,
         verbose_name='Ingredient name',
+        db_index=True,
     )
 
     unit = models.ForeignKey(
@@ -155,6 +156,29 @@ class Favorite(models.Model):
         ]
         verbose_name = 'Favorites object'
         verbose_name_plural = 'Favorites objects'
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(
+        User,
+        verbose_name='Someone who follows the author',
+        related_name='followers',
+        on_delete=models.CASCADE,
+    )
+    author = models.ForeignKey(
+        User,
+        verbose_name='Author to follow',
+        related_name='following',
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        verbose_name = 'Follow instance'
+        verbose_name_plural = 'Follow instances'
+        constraints = [
+            models.UniqueConstraint(fields=['follower', 'author'],
+                                    name='twice_follow_impossible')]
+# TODO: set up indexes
 
 
 @receiver(pre_delete, sender=Recipe)

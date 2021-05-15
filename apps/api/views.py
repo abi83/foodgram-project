@@ -8,7 +8,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 
 from apps.api.serializers import IngredientSerializer, FavoriteSerializer
-from apps.recipes.models import Ingredient, Favorite, Recipe
+from apps.recipes.models import Ingredient, Favorite, Recipe, Follow
 
 
 class IngredientList(generics.ListAPIView):
@@ -45,5 +45,17 @@ class FavoritesApi(generics.CreateAPIView, generics.DestroyAPIView):
         return Response({'status': 'successfully created'}, status=status.HTTP_201_CREATED)
 
     def delete(self, request, *args, **kwargs):
-        get_object_or_404(Favorite, recipe__slug=kwargs.get('recipe_slug')).delete()
+        get_object_or_404(Favorite, recipe__slug=kwargs.get('recipe_slug'), user=request.user,).delete()
+        return Response({'status': 'successfully deleted'}, status=status.HTTP_200_OK)
+
+
+class Subscription(APIView):
+    def post(self, request, *args, **kwargs):
+        _, created = Follow.objects.get_or_create(follower=self.request.user, author_id=request.data.get('id'))
+        if created:
+            return Response({'status': 'successfully created'}, status=status.HTTP_201_CREATED)
+        return Response({'status': 'follow instance already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        get_object_or_404(Follow, author_id=kwargs.get('author_id'), follower=request.user,).delete()
         return Response({'status': 'successfully deleted'}, status=status.HTTP_200_OK)

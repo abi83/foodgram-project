@@ -9,7 +9,7 @@ from django.views.generic import (ListView, DetailView, CreateView,
 from django.views.generic.edit import ModelFormMixin
 
 from apps.recipes.forms import RecipeForm
-from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
+from apps.recipes.models import Recipe, RecipeIngredient, Ingredient, Follow
 from apps.recipes.paginator import FixedPaginator
 
 User = get_user_model()
@@ -85,6 +85,8 @@ class AuthorRecipes(BaseRecipeList):
         return (super(AuthorRecipes, self)
                 .get_queryset()
                 .filter(author=self.get_user))
+        #  TODO: deal with the situation, when author is active,
+        #  but has no recipes published. In templates would be better
 
     @property
     def get_user(self):
@@ -119,6 +121,14 @@ class RecipeDetail(AuthorAndFavoriteMixin, DetailView):
         Select related ingredients
         """
         return super().get_queryset().prefetch_related('recipe_ingredients__ingredient')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Adding 'follow' value to context
+        """
+        follow = Follow.objects.filter(author=self.object.author, follower=self.request.user).exists()
+        kwargs.update({'follow': follow})
+        return super().get_context_data(**kwargs)
 
 
 class RecipeIngredientSaveMixin(LoginRequiredMixin):
