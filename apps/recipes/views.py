@@ -5,7 +5,7 @@ from django.db.models import Q, Prefetch, Subquery, OuterRef, Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import (ListView, DetailView, CreateView,
-                                  UpdateView, DeleteView,)
+                                  UpdateView, DeleteView, )
 from django.views.generic.edit import ModelFormMixin
 
 from apps.recipes.forms import RecipeForm

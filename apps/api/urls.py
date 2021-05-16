@@ -10,6 +10,9 @@ urlpatterns = [
     path('ingredients/', views.IngredientList.as_view(), name='ingredient-api'),
     path('favorites/', views.FavoritesApi.as_view(), name='favorites-create',),
     path('favorites/<slug:recipe_slug>', views.FavoritesApi.as_view(), name='favorites-delete', ),
-    path('subscriptions/', views.Subscription.as_view(), name='subscription-create',),
-    path('subscriptions/<int:author_id>', views.Subscription.as_view(), name='subscription-delete', )
+    path('subscriptions/', views.SubscriptionApi.as_view(), name='subscription-create', ),
+    path('subscriptions/<int:author_id>', views.SubscriptionApi.as_view(), name='subscription-delete', ),
+    path('cart/', views.CartAPI.as_view(), name='add-to-cart', ),
+    path('cart/<int:author_id>', views.CartAPI.as_view(), name='remove-from-cart', )
+
 ]
