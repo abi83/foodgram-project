@@ -34,11 +34,11 @@ class Api {
       })
   }
   addPurchases (id) {
-    return fetch(`/purchases`, {
+    return fetch(`/api/v1/cart/`, {
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify({
-        id: id
+        recipe_slug: id
       })
     })
       .then( e => {
@@ -48,8 +48,9 @@ class Api {
           return Promise.reject(e.statusText)
       })
   }
+  // TODO: ask what is going on here. Where is catch?
   removePurchases (id){
-    return fetch(`/purchases/${id}`, {
+    return fetch(`/api/v1/cart/${id}`, {
       method: 'DELETE',
       headers: this.headers,
     })

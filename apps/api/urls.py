@@ -13,6 +13,6 @@ urlpatterns = [
     path('subscriptions/', views.SubscriptionApi.as_view(), name='subscription-create', ),
     path('subscriptions/<int:author_id>', views.SubscriptionApi.as_view(), name='subscription-delete', ),
     path('cart/', views.CartAPI.as_view(), name='add-to-cart', ),
-    path('cart/<int:author_id>', views.CartAPI.as_view(), name='remove-from-cart', )
+    path('cart/<slug:recipe_slug>', views.CartAPI.as_view(), name='remove-from-cart', )
 
 ]
