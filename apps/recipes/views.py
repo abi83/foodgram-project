@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Q
+from django.db.models import Q, Prefetch, Subquery, OuterRef
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import (ListView, DetailView, CreateView,
@@ -191,3 +191,16 @@ class RecipeDelete(LoginRequiredMixin, RecipeRightsCheckMixin, DeleteView):
     model = Recipe
     success_url = reverse_lazy('recipes:index')
     template_name_suffix = '-confirm-delete'
+
+
+class Feed(LoginRequiredMixin, ListView):
+    template_name = 'recipes/recipes-feed.html'
+    context_object_name = 'authors'
+
+    def get_queryset(self):
+        three_recipes_id_subquery = Subquery(
+            Recipe.objects.filter(author_id=OuterRef('author_id'))
+                .values_list('id', flat=True)[:3]
+        )
+        prefetch = Prefetch('recipes', queryset=Recipe.objects.filter(id__in=three_recipes_id_subquery), )
+        return User.objects.filter(following__follower=self.request.user).prefetch_related(prefetch)

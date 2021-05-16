@@ -50,10 +50,12 @@
       <ul class="single-card__items">
         <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span> Добавить в покупки</button></li>
         <li class="single-card__item">
-          <button class="button button_style_light-blue button_size_subscribe" name="subscribe" {% if not follow %}data-out{% endif %}>
+          <button class="button button_style_light-blue button_size_subscribe" name="subscribe"
           {% if follow %}
+            >
             Отписаться от автора
           {% else %}
+            data-out>
             Подписаться на автора
           {% endif %}
           </button>

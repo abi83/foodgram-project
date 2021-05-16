@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.recipes.models import Unit, Ingredient, RecipeIngredient, Recipe, Favorite
+from apps.recipes.models import Unit, Ingredient, RecipeIngredient, Recipe, Favorite, Follow
 
 
 @admin.register(Unit)
@@ -29,4 +29,9 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Favorite)
 class FavoriteAdmon(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Follow)
+class FollowAdmin(admin.ModelAdmin):
     pass
