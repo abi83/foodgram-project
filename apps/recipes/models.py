@@ -181,6 +181,19 @@ class Follow(models.Model):
 # TODO: set up indexes
 
 
+class CartItem(models.Model):
+    user = models.ForeignKey(User, verbose_name='Cart\'s user', related_name='shopitems', on_delete=models.CASCADE)
+    recipe = models.ForeignKey(Recipe, verbose_name='Recipe in cart', related_name='carts', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Recipe in cart relation'
+        verbose_name_plural = 'Recipe in cart relations'
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'recipe',],
+                                    name='two_recipes_in_one_cart_impossible')
+        ]
+
+
 @receiver(pre_delete, sender=Recipe)
 def delete_image(instance, **kwargs):
     instance.image.delete()
