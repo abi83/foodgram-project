@@ -5,11 +5,12 @@ from django.db.models import Q, Prefetch, Subquery, OuterRef, Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import (ListView, DetailView, CreateView,
-                                  UpdateView, DeleteView)
+                                  UpdateView, DeleteView,)
 from django.views.generic.edit import ModelFormMixin
 
 from apps.recipes.forms import RecipeForm
-from apps.recipes.models import Recipe, RecipeIngredient, Ingredient, Follow
+from apps.recipes.models import (
+    Recipe, RecipeIngredient, Ingredient, Follow, CartItem)
 from apps.recipes.paginator import FixedPaginator
 
 User = get_user_model()
@@ -216,4 +217,16 @@ class Feed(LoginRequiredMixin, ListView):
 
 class ShopList(LoginRequiredMixin, ListView):
     template_name = 'recipes/shop-list.html'
-    model = Recipe
+    context_object_name = 'cartitems'
+
+    def get_queryset(self):
+        return CartItem.objects.filter(user=self.request.user).select_related('recipe')
+
+
+def shop_list_count(request):
+    """
+    A context processor making 'cart_count' variable available in templates
+    """
+    return {
+        'cart_count': CartItem.objects.filter(user=request.user).count()
+    }

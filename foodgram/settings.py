@@ -72,6 +72,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # custom context processor for 'cart_count' variable
+                'apps.recipes.views.shop_list_count',
                 # 'apps.users.templatetags.user_filters',  # add a class to forms
             ],
         },

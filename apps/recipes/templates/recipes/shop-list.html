@@ -9,30 +9,19 @@
   </div>
   <div class="card-list card-list_column">
     <ul class="shopping-list">
-      <li class="shopping-list__item" data-id="111">
-        <div class="recipe recipe_reverse">
-          <img src="./images/testCardImg.png" alt="какой-то текст" class="recipe__image recipe__image_big">
-          <h3 class="recipe__title">Французские тосты</h3>
-          <p class="recipe__text"><span class="icon-time"></span> 20 мин.</p>
-        </div>
-        <a href="#" class="shopping-list__button link">Удалить</a>
-      </li>
-      <li class="shopping-list__item" data-id="1112">
-        <div class="recipe recipe_reverse">
-          <img src="./images/testCardImg.png" alt="какой-то текст" class="recipe__image recipe__image_big">
-          <h3 class="recipe__title">Французские тосты</h3>
-          <p class="recipe__text"><span class="icon-time"></span> 20 мин.</p>
-        </div>
-        <a href="#" class="shopping-list__button link">Удалить</a>
-      </li>
-      <li class="shopping-list__item" data-id="1113">
-        <div class="recipe recipe_reverse">
-          <img src="./images/testCardImg.png" alt="какой-то текст" class="recipe__image recipe__image_big">
-          <h3 class="recipe__title">Французские тосты</h3>
-          <p class="recipe__text"><span class="icon-time"></span> 20 мин.</p>
-        </div>
-        <a href="#" class="shopping-list__button link">Удалить</a>
-      </li>
+      {% for item in cartitems %}
+        <li class="shopping-list__item" data-id="{{ item.recipe.pk }}">
+          <div class="recipe recipe_reverse">
+            {% load thumbnail %}
+            {% thumbnail item.recipe.image "90x90" crop="center" upscale=True as im %}
+              <img src="{{ im.url }}" alt="Изображение {{ item.recipe.title }}" class="recipe__image recipe__image_big" title="{{ recipe.title }}">
+            {% endthumbnail %}
+            <h3 class="recipe__title">{{ item.recipe.title }}</h3>
+            <p class="recipe__text"><span class="icon-time"></span> {{ item.recipe.time }} min.</p>
+          </div>
+          <a href="#" class="shopping-list__button link">Удалить</a>
+        </li>
+      {% endfor %}
     </ul>
     <a href="#"><button class="button button_style_blue">Скачать список</button></a>
   </div>

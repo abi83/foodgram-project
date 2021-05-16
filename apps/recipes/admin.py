@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.recipes.models import Unit, Ingredient, RecipeIngredient, Recipe, Favorite, Follow
+from apps.recipes.models import Unit, Ingredient, RecipeIngredient, Recipe, Favorite, Follow, CartItem
 
 
 @admin.register(Unit)
@@ -34,4 +34,9 @@ class FavoriteAdmon(admin.ModelAdmin):
 
 @admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
     pass
