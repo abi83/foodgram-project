@@ -75,13 +75,26 @@ class Ingredient(models.Model):
 
 
 class RecipeQuerySet(models.QuerySet):
-    def annotate_with_favorite_prop(self, user_id: int):
+    def annotate_with_favorite_and_cart_prop(self, user_id: int):
         return self.annotate(is_favorite=Exists(
             Favorite.objects.filter(
                 user_id=user_id,
                 recipe_id=OuterRef('pk'),
             ),
+        )).annotate(in_cart=Exists(
+            CartItem.objects.filter(
+                user_id=user_id,
+                recipe_id=OuterRef('pk'),
+            )
         ))
+
+    # def annotate_with_cart_info(self, user_id: int):
+    #     return self.annotate(in_cart=Exists(
+    #         CartItem.objects.filter(
+    #             user_id=user_id,
+    #             recipe_id=OuterRef('pk'),
+    #         )
+    #     ))
 
 
 class Recipe(models.Model):

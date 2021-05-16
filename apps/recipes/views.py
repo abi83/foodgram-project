@@ -16,7 +16,7 @@ from apps.recipes.paginator import FixedPaginator
 User = get_user_model()
 
 
-class AuthorAndFavoriteMixin:
+class RecipeAnnotateMixin:
     def get_queryset(self):
         """
         Annotate with favorite mark, select related authors.
@@ -24,11 +24,11 @@ class AuthorAndFavoriteMixin:
         query_set = super().get_queryset()
         return (query_set
                 .select_related('author')
-                .annotate_with_favorite_prop(user_id=self.request.user.id)
+                .annotate_with_favorite_and_cart_prop(user_id=self.request.user.id)
                 )
 
 
-class BaseRecipeList(AuthorAndFavoriteMixin, ListView):
+class BaseRecipeList(RecipeAnnotateMixin, ListView):
     """
     A base class for recipes list classes: IndexPage, Author's page
     Favorites page
@@ -112,7 +112,7 @@ class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
                 .filter(liked_users__user=self.request.user))
 
 
-class RecipeDetail(AuthorAndFavoriteMixin, DetailView):
+class RecipeDetail(RecipeAnnotateMixin, DetailView):
     template_name = 'recipes/recipe-detail.html'
     context_object_name = 'recipe'
     model = Recipe

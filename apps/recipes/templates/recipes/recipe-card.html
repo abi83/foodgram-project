@@ -35,7 +35,15 @@
     </div>
   </div>
   <div class="card__footer">
-    <button class="button button_style_light-blue" name="purchases" data-out><span class="icon-plus button__icon"></span>Добавить в покупки</button>
+    {% if recipe.in_cart %}
+      <button class="button button_style_light-blue-outline" name="purchases">
+        <span class="icon-check button__icon"></span>Рецепт добавлен
+      </button>
+    {% else %}
+      <button class="button button_style_light-blue" name="purchases" data-out>
+        <span class="icon-plus button__icon"></span>Добавить в покупки
+      </button>
+    {% endif %}
     {% if user.is_authenticated %}
       <button class="button button_style_none" name="favorites"
       {% if recipe.is_favorite %}

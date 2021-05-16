@@ -10,7 +10,7 @@
   <div class="card-list card-list_column">
     <ul class="shopping-list">
       {% for item in cartitems %}
-        <li class="shopping-list__item" data-id="{{ item.recipe.pk }}">
+        <li class="shopping-list__item" data-id="{{ item.recipe.slug }}">
           <div class="recipe recipe_reverse">
             {% load thumbnail %}
             {% thumbnail item.recipe.image "90x90" crop="center" upscale=True as im %}
@@ -25,4 +25,12 @@
     </ul>
     <a href="#"><button class="button button_style_blue">Скачать список</button></a>
   </div>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/config/config.js' %}"></script>
+  <script src="{% static 'js/components/ShopList.js' %}"></script>
+  <script src="{% static 'js/components/Header.js' %}"></script>
+
+  <script src="{% static 'js/api/Api.js' %}"></script>
+  <script src="{% static 'js/shopList.js' %}"></script>
 {% endblock %}
