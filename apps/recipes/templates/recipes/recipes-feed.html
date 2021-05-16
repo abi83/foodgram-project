@@ -7,16 +7,16 @@
   Recipes feed
 {% endblock %}
 {% block content %}
-
     <div class="main__header">
       <h1 class="main__title">Мои подписки</h1>
     </div>
-
     <div class="card-list">
       {% for author in authors %}
         <div class="card-user" data-author="{{ author.pk }}">
           <div class="card-user__header">
-            <h2 class="card-user__title">{{ author.get_full_name }}</h2>
+            <a class="link" href="{% url "recipes:author-detail" username=author.username %}">
+              <h2 class="card-user__title">{{ author.get_full_name }}</h2>
+            </a>
           </div>
           <div class="card-user__body">
             <ul class="card-user__items">
@@ -27,13 +27,17 @@
                     {% thumbnail recipe.image "365x240" crop="center" upscale=True as im %}
                       <img src="{{ im.url }}" alt="Изображение {{ recipe.title }}" class="recipe__image" title="{{ recipe.title }}">
                     {% endthumbnail %}
-                    <h3 class="recipe__title">{{ recipe.title }}</h3>
+                    <a href="{% url "recipes:recipe-detail" slug=recipe.slug %}" class="link">
+                      <h3 class="recipe__title">
+                        {{ recipe.title }}
+                      </h3>
+                    </a>
                     <p class="recipe__text"><span class="icon-time"></span> {{ recipe.time }}</p>
                   </div>
                 </li>
               {% endfor %}
               <li class="card-user__item">
-                <a href="#" class="card-user__link link">Еще 7 рецептов...</a>
+                <a href="{% url "recipes:author-detail" username=author.username %}" class="card-user__link link">Еще {{ author.recipes_count }} рецептов...</a>
               </li>
             </ul>
           </div>
@@ -43,17 +47,9 @@
         </div>
       {% endfor %}
     </div>
-    <nav class="pagination" aria-label="Search results pages">
-      <ul class="pagination__container">
-        <li class="pagination__item"><a class="pagination__link link" href="#"><span class="icon-left"></span></a></li>
-        <li class="pagination__item pagination__item_active"><a class="pagination__link link" href="#">1</a></li>
-        <li class="pagination__item"><a class="pagination__link link" href="#">2</a></li>
-        <li class="pagination__item"><a class="pagination__link link" href="#">3</a></li>
-        <li class="pagination__item"><a class="pagination__link link" href="#">4</a></li>
-        <li class="pagination__item"><a class="pagination__link link" href="#">5</a></li>
-        <li class="pagination__item"><a class="pagination__link link" href="#"><span class="icon-right"></span></a></li>
-      </ul>
-    </nav>
+    {% if page_obj.has_other_pages %}
+      {% include 'paginator.html' with page_obj=page_obj %}
+    {% endif %}
 {% endblock %}
 {% block scripts %}
   <script src="{% static 'js/config/config.js' %}"></script>
