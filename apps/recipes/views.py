@@ -212,3 +212,8 @@ class Feed(LoginRequiredMixin, ListView):
             .filter(following__follower=self.request.user)
             .prefetch_related(prefetch)
             .annotate(recipes_count=Count('recipes')))
+
+
+class ShopList(LoginRequiredMixin, ListView):
+    template_name = 'recipes/shop-list.html'
+    model = Recipe
