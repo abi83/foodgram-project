@@ -16,7 +16,9 @@
             {% thumbnail item.recipe.image "90x90" crop="center" upscale=True as im %}
               <img src="{{ im.url }}" alt="Изображение {{ item.recipe.title }}" class="recipe__image recipe__image_big" title="{{ recipe.title }}">
             {% endthumbnail %}
-            <h3 class="recipe__title">{{ item.recipe.title }}</h3>
+            <a class="link" href="{% url 'recipes:recipe-detail' slug=item.recipe.slug %}" target="_blank">
+              <h3 class="recipe__title">{{ item.recipe.title }}</h3>
+            </a>
             <p class="recipe__text"><span class="icon-time"></span> {{ item.recipe.time }} min.</p>
           </div>
           <a href="#" class="shopping-list__button link">Удалить</a>

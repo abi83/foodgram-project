@@ -252,8 +252,14 @@ class ShopList(View):
             try:
                 data['ingredients'][item.ingredient.name]['value'] += item.count
             except KeyError:
-                data['ingredients'][item.ingredient.name] = {'value': item.count, 'unit': item.ingredient.unit}
+                data['ingredients'][item.ingredient.name] = {
+                    'value': item.count,
+                    'unit': item.ingredient.unit
+                }
         pdf = render_to_pdf('recipes/shop-list.html', data)
         filename = f'Shop_list_on_{datetime.date.today()}.pdf'
-        return HttpResponse(pdf, content_type='application/pdf',
-                            headers={'Content-Disposition': f"attachment; filename={filename}"})
+        return HttpResponse(
+            pdf,
+            content_type='application/pdf',
+            headers={'Content-Disposition': f"attachment; filename={filename}"}
+        )
