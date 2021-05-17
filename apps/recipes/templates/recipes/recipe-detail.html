@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
 
-  <div class="single-card" data-id="{{ recipe.slug }}" data-author="12">
+  <div class="single-card" data-id="{{ recipe.slug }}" data-author="{{ recipe.author.pk }}">
     {% load thumbnail %}
     {% thumbnail recipe.image "480x480" crop="center" upscale=True as im %}
       <img src="{{ im.url }}" alt="Изображение {{ recipe.title }}" class="card__image" title="{{ recipe.title }}" height="480px">
@@ -49,7 +49,17 @@
       </div>
       <ul class="single-card__items">
         <li class="single-card__item"><button class="button button_style_blue" name="purchases" data-out><span class="icon-plus"></span> Добавить в покупки</button></li>
-        <li class="single-card__item"><button class="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
+        <li class="single-card__item">
+          <button class="button button_style_light-blue button_size_subscribe" name="subscribe"
+          {% if follow %}
+            >
+            Отписаться от автора
+          {% else %}
+            data-out>
+            Подписаться на автора
+          {% endif %}
+          </button>
+        </li>
       </ul>
       <div class="single-card__section">
         <h3 class="single-card__section-title">Ингридиенты:</h3>

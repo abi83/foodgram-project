@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="ru">
+  <head>
+    <title>Shop list for recipes on {{ time }}</title>
+    <meta charset="UTF-8">
+    <style type="text/css">
+      @font-face { font-family: 'Roboto'; src: url(/static/fonts/roboto/Roboto-Italic.ttf); }
+      body {
+        font-weight: 200;
+        font-size: 14px;
+        font-family: 'Roboto', sans-serif;
+      }
+      .header {
+        font-size: 20px;
+        font-weight: 100;
+        text-align: center;
+        color: red;
+        font-family: 'Roboto', sans-serif;
+      }
+      .title {
+        font-size: 22px;
+        font-weight: 100;
+        padding: 10px 20px 0px 20px;
+      }
+      .details {
+        padding: 10px 20px 0px 20px;
+        text-align: left !important;
+      }
+      .hrItem {
+        border: 1px;
+        height: 1px;
+        color: black;
+        background-color: black;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='header'>
+      <p class='title'>Shop list for {{ number }} recipes</p>
+    </div>
+    <div class='details'>
+      Made for: {{ customer_name }}<br/>
+      Date: {{ time }}<br/>
+      <hr class='hrItem' />
+    </div>
+    <div class='details'>
+      {% for name, quantity in ingredients.items %}
+        <p>
+          {{ name }}: {{ quantity.value }} {{ quantity.unit }}
+        </p>
+      {% endfor %}
+    </div>
+  </body>
+</html>

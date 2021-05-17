@@ -24,6 +24,8 @@
   <div class="card-list">
     {% for recipe in recipes %}
       {% include 'recipes/recipe-card.html' %}
+    {% empty %}
+      <p>No recipes in the page</p>
     {% endfor %}
   </div>
   {% if page_obj.has_other_pages %}

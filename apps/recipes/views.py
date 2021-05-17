@@ -1,33 +1,39 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Q
+from django.db.models import Q, Prefetch, Subquery, OuterRef, Count
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import (ListView, DetailView, CreateView,
-                                  UpdateView, DeleteView)
+                                  UpdateView, DeleteView, )
+from django.views.generic.base import View
 from django.views.generic.edit import ModelFormMixin
 
 from apps.recipes.forms import RecipeForm
-from apps.recipes.models import Recipe, RecipeIngredient, Ingredient
+from apps.recipes.models import (
+    Recipe, RecipeIngredient, Ingredient, Follow, CartItem)
 from apps.recipes.paginator import FixedPaginator
+from apps.recipes.utils import render_to_pdf
 
 User = get_user_model()
 
 
-class AuthorAndFavoriteMixin:
+class RecipeAnnotateMixin:
     def get_queryset(self):
         """
         Annotate with favorite mark, select related authors.
         """
         query_set = super().get_queryset()
-        return (query_set
-                .select_related('author')
-                .annotate_with_favorite_prop(user_id=self.request.user.id)
-                )
+        return query_set.select_related(
+            'author'
+        ).annotate_with_favorite_and_cart_prop(
+            user_id=self.request.user.id)
 
 
-class BaseRecipeList(AuthorAndFavoriteMixin, ListView):
+class BaseRecipeList(RecipeAnnotateMixin, ListView):
     """
     A base class for recipes list classes: IndexPage, Author's page
     Favorites page
@@ -42,9 +48,11 @@ class BaseRecipeList(AuthorAndFavoriteMixin, ListView):
     def get_queryset(self):
         """
         Filter by tag_breakfast, tag_lunch, tag_dinner
+        URL example: http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
         """
-        # http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
-        query_set = super().get_queryset()
+        query_set = (super().get_queryset()
+                     .defer('description')
+                     .filter(is_active=True))
         tags = self.request.GET.get('tags', None)
         if tags is None:
             return query_set
@@ -82,8 +90,7 @@ class AuthorRecipes(BaseRecipeList):
     A view for author's recipes page
     """
     def get_queryset(self):
-        return (super(AuthorRecipes, self)
-                .get_queryset()
+        return (super().get_queryset()
                 .filter(author=self.get_user))
 
     @property
@@ -109,7 +116,7 @@ class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
                 .filter(liked_users__user=self.request.user))
 
 
-class RecipeDetail(AuthorAndFavoriteMixin, DetailView):
+class RecipeDetail(RecipeAnnotateMixin, DetailView):
     template_name = 'recipes/recipe-detail.html'
     context_object_name = 'recipe'
     model = Recipe
@@ -118,25 +125,39 @@ class RecipeDetail(AuthorAndFavoriteMixin, DetailView):
         """
         Select related ingredients
         """
-        return super().get_queryset().prefetch_related('recipe_ingredients__ingredient')
+        return (super().get_queryset()
+                .prefetch_related('recipe_ingredients__ingredient')
+                .filter(is_active=True))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Adding 'follow' value to context
+        """
+        follow = Follow.objects.filter(
+            author=self.object.author,
+            follower=self.request.user
+        ).exists()
+        kwargs.update({'follow': follow})
+        return super().get_context_data(**kwargs)
 
 
 class RecipeIngredientSaveMixin(LoginRequiredMixin):
     @staticmethod
     def add_ingredients_to_recipe(request_data: dict, recipe):
-        ingredients = Ingredient.objects.filter(name__in=[
-            value for key, value in request_data.items()
-            if 'nameIngredient' in key
-        ])
-        values = [request_data.get('valueIngredient_' + key.split('_')[1])
-                  for key in request_data
-                  if 'nameIngredient' in key]
+        """
+        Handle request data to create Recipe-Ingredients relation objects
+        with bulk_create
+        """
+        # a dict for all ingredients in DB. It returns an id on name key
+        ingredients_dic = {ing['name']: ing['id']
+                           for ing in Ingredient.objects.values('name', 'id')}
         objs = [RecipeIngredient(
             recipe=recipe,
-            ingredient=ingredient,
-            count=value,
+            ingredient_id=ingredients_dic[value],
+            count=request_data.get('valueIngredient_' + key.split('_')[1]),
             )
-            for ingredient, value in zip(ingredients, values)
+            for key, value in request_data.items()
+            if key.startswith('nameIngredient_')
         ]
         RecipeIngredient.objects.bulk_create(objs)
 
@@ -147,7 +168,8 @@ class RecipeRightsCheckMixin(UserPassesTestMixin):
                 or self.request.user == self.get_object().author)
 
 
-class RecipeEdit(RecipeRightsCheckMixin, RecipeIngredientSaveMixin, UpdateView):
+class RecipeEdit(RecipeRightsCheckMixin, RecipeIngredientSaveMixin,
+                 UpdateView):
     context_object_name = 'recipe'
     model = Recipe
     template_name = 'recipes/recipe-update.html'
@@ -181,3 +203,74 @@ class RecipeDelete(LoginRequiredMixin, RecipeRightsCheckMixin, DeleteView):
     model = Recipe
     success_url = reverse_lazy('recipes:index')
     template_name_suffix = '-confirm-delete'
+
+
+class Feed(LoginRequiredMixin, ListView):
+    template_name = 'recipes/recipes-feed.html'
+    context_object_name = 'authors'
+    paginator_class = FixedPaginator
+    paginate_by = 6
+
+    def get_queryset(self):
+        three_recipes_id_subquery = Subquery(
+            Recipe.objects.filter(
+                author_id=OuterRef('author_id')
+            ).values_list('id', flat=True)[:3])
+        prefetch = Prefetch(
+            'recipes',
+            queryset=Recipe.objects.filter(id__in=three_recipes_id_subquery), )
+        return (User.objects
+            .filter(following__follower=self.request.user)
+            .prefetch_related(prefetch)
+            .annotate(recipes_count=Count('recipes'))
+            .order_by('-recipes_count'))
+
+
+class Cart(LoginRequiredMixin, ListView):
+    template_name = 'recipes/cart.html'
+    context_object_name = 'cartitems'
+
+    def get_queryset(self):
+        return CartItem.objects.filter(user=self.request.user
+                                       ).select_related('recipe')
+
+
+def cart_count(request):
+    """
+    A context processor making 'cart_count' variable available in templates
+    """
+    return {
+        'cart_count': CartItem.objects.filter(user=request.user).count()
+    }
+
+
+class ShopList(View):
+    """
+    A .pdf view
+    """
+    def get(self, request, *args, **kwargs):
+        carts = CartItem.objects.filter(user=self.request.user
+                                        ).select_related('recipe')
+        recipes = Recipe.objects.filter(carts__in=carts)
+        items = RecipeIngredient.objects.filter(recipe__in=recipes)
+        data = {
+            'time': datetime.datetime.now(),
+            'number': recipes.count(),
+            'customer_name': request.user.get_full_name(),
+            'ingredients': {},
+        }
+        for item in items:
+            try:
+                data['ingredients'][item.ingredient.name]['value'] += item.count
+            except KeyError:
+                data['ingredients'][item.ingredient.name] = {
+                    'value': item.count,
+                    'unit': item.ingredient.unit
+                }
+        pdf = render_to_pdf('recipes/shop-list.html', data)
+        filename = f'Shop_list_on_{datetime.date.today()}.pdf'
+        return HttpResponse(
+            pdf,
+            content_type='application/pdf',
+            headers={'Content-Disposition': f"attachment; filename={filename}"}
+        )

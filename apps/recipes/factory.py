@@ -46,7 +46,6 @@ class RecipeFactory(django.DjangoModelFactory):
     def tag_dinner(self):
         return Faker().pybool()
 
-
     @factory.post_generation
     def ingredients(self, create, extracted, **kwargs):
         if not create:
@@ -67,4 +66,3 @@ class RecipeIngredientFactory(django.DjangoModelFactory):
 
     class Meta:
         model = RecipeIngredient
-
