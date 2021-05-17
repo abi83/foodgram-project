@@ -27,10 +27,10 @@ class RecipeAnnotateMixin:
         Annotate with favorite mark, select related authors.
         """
         query_set = super().get_queryset()
-        return (query_set
-                .select_related('author')
-                .annotate_with_favorite_and_cart_prop(user_id=self.request.user.id)
-                )
+        return query_set.select_related(
+            'author'
+        ).annotate_with_favorite_and_cart_prop(
+            user_id=self.request.user.id)
 
 
 class BaseRecipeList(RecipeAnnotateMixin, ListView):
@@ -48,9 +48,11 @@ class BaseRecipeList(RecipeAnnotateMixin, ListView):
     def get_queryset(self):
         """
         Filter by tag_breakfast, tag_lunch, tag_dinner
+        URL example: http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
         """
-        # http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
-        query_set = super().get_queryset()
+        query_set = (super().get_queryset()
+                     .defer('description')
+                     .filter(is_active=True))
         tags = self.request.GET.get('tags', None)
         if tags is None:
             return query_set
@@ -88,11 +90,8 @@ class AuthorRecipes(BaseRecipeList):
     A view for author's recipes page
     """
     def get_queryset(self):
-        return (super(AuthorRecipes, self)
-                .get_queryset()
+        return (super().get_queryset()
                 .filter(author=self.get_user))
-        #  TODO: deal with the situation, when author is active,
-        #  but has no recipes published. In templates would be better
 
     @property
     def get_user(self):
@@ -126,13 +125,18 @@ class RecipeDetail(RecipeAnnotateMixin, DetailView):
         """
         Select related ingredients
         """
-        return super().get_queryset().prefetch_related('recipe_ingredients__ingredient')
+        return (super().get_queryset()
+                .prefetch_related('recipe_ingredients__ingredient')
+                .filter(is_active=True))
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """
         Adding 'follow' value to context
         """
-        follow = Follow.objects.filter(author=self.object.author, follower=self.request.user).exists()
+        follow = Follow.objects.filter(
+            author=self.object.author,
+            follower=self.request.user
+        ).exists()
         kwargs.update({'follow': follow})
         return super().get_context_data(**kwargs)
 
@@ -146,7 +150,7 @@ class RecipeIngredientSaveMixin(LoginRequiredMixin):
         """
         # a dict for all ingredients in DB. It returns an id on name key
         ingredients_dic = {ing['name']: ing['id']
-                   for ing in Ingredient.objects.values('name', 'id')}
+                           for ing in Ingredient.objects.values('name', 'id')}
         objs = [RecipeIngredient(
             recipe=recipe,
             ingredient_id=ingredients_dic[value],
@@ -164,7 +168,8 @@ class RecipeRightsCheckMixin(UserPassesTestMixin):
                 or self.request.user == self.get_object().author)
 
 
-class RecipeEdit(RecipeRightsCheckMixin, RecipeIngredientSaveMixin, UpdateView):
+class RecipeEdit(RecipeRightsCheckMixin, RecipeIngredientSaveMixin,
+                 UpdateView):
     context_object_name = 'recipe'
     model = Recipe
     template_name = 'recipes/recipe-update.html'
@@ -208,17 +213,17 @@ class Feed(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         three_recipes_id_subquery = Subquery(
-            Recipe
-                .objects.filter(author_id=OuterRef('author_id'))
-                .values_list('id', flat=True)[:3]
-        )
+            Recipe.objects.filter(
+                author_id=OuterRef('author_id')
+            ).values_list('id', flat=True)[:3])
         prefetch = Prefetch(
             'recipes',
             queryset=Recipe.objects.filter(id__in=three_recipes_id_subquery), )
         return (User.objects
             .filter(following__follower=self.request.user)
             .prefetch_related(prefetch)
-            .annotate(recipes_count=Count('recipes')))
+            .annotate(recipes_count=Count('recipes'))
+            .order_by('-recipes_count'))
 
 
 class Cart(LoginRequiredMixin, ListView):
@@ -226,7 +231,8 @@ class Cart(LoginRequiredMixin, ListView):
     context_object_name = 'cartitems'
 
     def get_queryset(self):
-        return CartItem.objects.filter(user=self.request.user).select_related('recipe')
+        return CartItem.objects.filter(user=self.request.user
+                                       ).select_related('recipe')
 
 
 def cart_count(request):
@@ -239,8 +245,12 @@ def cart_count(request):
 
 
 class ShopList(View):
+    """
+    A .pdf view
+    """
     def get(self, request, *args, **kwargs):
-        carts = CartItem.objects.filter(user=self.request.user).select_related('recipe')
+        carts = CartItem.objects.filter(user=self.request.user
+                                        ).select_related('recipe')
         recipes = Recipe.objects.filter(carts__in=carts)
         items = RecipeIngredient.objects.filter(recipe__in=recipes)
         data = {

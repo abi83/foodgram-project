@@ -3,6 +3,9 @@ from django.http import Http404
 
 
 class FixedPaginator(Paginator):
+    """
+    Prevent 404 error, redirect to last page if very high number is requested
+    """
     def validate_number(self, number):
         try:
             return super(FixedPaginator, self).validate_number(number)

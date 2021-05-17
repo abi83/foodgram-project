@@ -88,28 +88,69 @@ class RecipeQuerySet(models.QuerySet):
             )
         ))
 
-    # def annotate_with_cart_info(self, user_id: int):
-    #     return self.annotate(in_cart=Exists(
-    #         CartItem.objects.filter(
-    #             user_id=user_id,
-    #             recipe_id=OuterRef('pk'),
-    #         )
-    #     ))
-
 
 class Recipe(models.Model):
-    title = models.CharField(max_length=255, blank=False, null=True, verbose_name='Recipe title')
-    image = models.ImageField(upload_to='recipe_images', blank=True, null=True, verbose_name='Recipe image', help_text='Image file only'    )
-    slug = models.SlugField(unique=True, max_length=60, verbose_name='Recipes slug, a part of detail page URL')
-    author = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1, related_name='recipes')
-    time = models.PositiveIntegerField(verbose_name='Cooking time in minutes', validators=[MinValueValidator(1)])
-    ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient', blank=True, help_text='Fill out some ingredients and it"s values')
-    description = models.TextField(blank=True, null=True, help_text='Fill out description')
-    tag_breakfast = models.BooleanField(default=False, verbose_name='Breakfast', help_text='Select if this recipe is suitable for breakfast')
-    tag_lunch = models.BooleanField(default=False, verbose_name='Lunch', help_text='Select if this recipe is suitable for lunch')
-    tag_dinner = models.BooleanField(default=False, verbose_name='Dinner', help_text='Select if this recipe is suitable for dinner')
-    pub_date = models.DateTimeField(verbose_name='Дата публикации', auto_now_add=True, )
-    is_active = models.BooleanField(default=True)
+    title = models.CharField(
+        max_length=255,
+        blank=False,
+        null=True,
+        verbose_name='Recipe title'
+    )
+    image = models.ImageField(
+        upload_to='recipe_images',
+        blank=True,
+        null=True,
+        verbose_name='Recipe image',
+        help_text='Image file only'
+    )
+    slug = models.SlugField(
+        unique=True,
+        max_length=60,
+        verbose_name='Recipes slug, a part of detail page URL',
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.SET_DEFAULT,
+        default=1,
+        related_name='recipes'
+    )
+    time = models.PositiveIntegerField(
+        verbose_name='Cooking time in minutes',
+        validators=[MinValueValidator(1), ]
+    )
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='RecipeIngredient',
+        blank=True,
+        help_text='Fill out some ingredients and it"s values'
+    )
+    description = models.TextField(
+        blank=True,
+        null=True,
+        help_text='Fill in the description'
+    )
+    tag_breakfast = models.BooleanField(
+        default=False,
+        verbose_name='Breakfast',
+        help_text='Select if this recipe is suitable for breakfast'
+    )
+    tag_lunch = models.BooleanField(
+        default=False,
+        verbose_name='Lunch',
+        help_text='Select if this recipe is suitable for lunch',
+    )
+    tag_dinner = models.BooleanField(
+        default=False,
+        verbose_name='Dinner',
+        help_text='Select if this recipe is suitable for dinner',
+    )
+    pub_date = models.DateTimeField(
+        verbose_name='Дата публикации',
+        auto_now_add=True,
+    )
+    is_active = models.BooleanField(
+        default=True,
+    )
 
     objects = RecipeQuerySet.as_manager()
 
@@ -122,7 +163,8 @@ class Recipe(models.Model):
         try:
             super(Recipe, self).save(*args, **kwargs)
         except IntegrityError:
-            self.slug = slugify(self.title + str(date.today()) + str(uuid.uuid1())[:8])
+            self.slug = slugify(
+                self.title + str(date.today()) + str(uuid.uuid1())[:8])
             super(Recipe, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -138,9 +180,26 @@ class Recipe(models.Model):
 
 
 class RecipeIngredient(models.Model):
-    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_ingredients')
-    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-    count = models.PositiveIntegerField(blank=True, null=True, validators=[MinValueValidator(1)])
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name='recipe_ingredients',
+    )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+    )
+    count = models.PositiveIntegerField(
+        blank=False,
+        null=False,
+        default=0,
+        validators=[MinValueValidator(1)]
+    )
+
+
+@receiver(pre_delete, sender=Recipe)
+def delete_image(instance, **kwargs):
+    instance.image.delete()
 
 
 class Favorite(models.Model):
@@ -191,24 +250,25 @@ class Follow(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['follower', 'author'],
                                     name='twice_follow_impossible')]
-# TODO: set up indexes
 
 
 class CartItem(models.Model):
-    user = models.ForeignKey(User, verbose_name='Cart\'s user', related_name='shopitems', on_delete=models.CASCADE)
-    recipe = models.ForeignKey(Recipe, verbose_name='Recipe in cart', related_name='carts', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        verbose_name='Cart\'s user',
+        related_name='shopitems',
+        on_delete=models.CASCADE
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        verbose_name='Recipe in cart',
+        related_name='carts', on_delete=models.CASCADE
+    )
 
     class Meta:
         verbose_name = 'Recipe in cart relation'
         verbose_name_plural = 'Recipe in cart relations'
         constraints = [
-            models.UniqueConstraint(fields=['user', 'recipe',],
+            models.UniqueConstraint(fields=['user', 'recipe', ],
                                     name='two_recipes_in_one_cart_impossible')
         ]
-
-
-@receiver(pre_delete, sender=Recipe)
-def delete_image(instance, **kwargs):
-    instance.image.delete()
-
-

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from apps.recipes.models import Unit, Ingredient, RecipeIngredient, Recipe, Favorite, Follow, CartItem
+from apps.recipes.models import (Unit, Ingredient, RecipeIngredient, Recipe,
+                                 Favorite, Follow, CartItem)
 
 
 @admin.register(Unit)
