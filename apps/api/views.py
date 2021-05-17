@@ -1,13 +1,10 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, mixins, viewsets, status
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.urlpatterns import format_suffix_patterns
 
-
-from apps.api.serializers import IngredientSerializer, FavoriteSerializer
+from apps.api.serializers import IngredientSerializer
 from apps.recipes.models import Ingredient, Favorite, Recipe, Follow, CartItem
 
 
