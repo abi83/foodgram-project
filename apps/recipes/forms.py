@@ -1,6 +1,6 @@
 from django import forms
 
-from apps.recipes.models import Recipe
+from apps.recipes.models import Recipe, Ingredient
 
 
 class RecipeForm(forms.ModelForm):
@@ -13,7 +13,7 @@ class RecipeForm(forms.ModelForm):
         if not (tag_breakfast or tag_lunch or tag_dinner):
             msg = 'Check at least one tag'
             self.add_error('tag_breakfast', msg)
-
+        return cleaned_data
     # TODO: validate minimum one ingredient is checked
     class Meta:
         model = Recipe

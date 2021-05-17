@@ -140,19 +140,20 @@ class RecipeDetail(RecipeAnnotateMixin, DetailView):
 class RecipeIngredientSaveMixin(LoginRequiredMixin):
     @staticmethod
     def add_ingredients_to_recipe(request_data: dict, recipe):
-        ingredients = Ingredient.objects.filter(name__in=[
-            value for key, value in request_data.items()
-            if 'nameIngredient' in key
-        ])
-        values = [request_data.get('valueIngredient_' + key.split('_')[1])
-                  for key in request_data
-                  if 'nameIngredient' in key]
+        """
+        Handle request data to create Recipe-Ingredients relation objects
+        with bulk_create
+        """
+        # a dict for all ingredients in DB. It returns an id on name key
+        ingredients_dic = {ing['name']: ing['id']
+                   for ing in Ingredient.objects.values('name', 'id')}
         objs = [RecipeIngredient(
             recipe=recipe,
-            ingredient=ingredient,
-            count=value,
+            ingredient_id=ingredients_dic[value],
+            count=request_data.get('valueIngredient_' + key.split('_')[1]),
             )
-            for ingredient, value in zip(ingredients, values)
+            for key, value in request_data.items()
+            if key.startswith('nameIngredient_')
         ]
         RecipeIngredient.objects.bulk_create(objs)
 
