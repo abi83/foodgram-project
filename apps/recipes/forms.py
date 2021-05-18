@@ -18,7 +18,7 @@ class RecipeForm(forms.ModelForm):
 
     class Meta:
         model = Recipe
-        exclude = ('slug', 'author', )
+        exclude = ('slug', 'author', 'is_active',)
         widgets = {
             'title': forms.TextInput(
                 attrs={'class': 'form__input'},),

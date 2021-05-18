@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -73,6 +74,9 @@ class SubscriptionApi(APIView):
 
 
 class CartAPI(APIView):
+    permission_classes = [AllowAny,]
+    # TODO: make smth with anonymous users
+
     def post(self, request, *args, **kwargs):
         recipe = Recipe.objects.get(slug=request.data.get('recipe_slug'))
         _, created = CartItem.objects.get_or_create(
