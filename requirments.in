@@ -1,6 +1,8 @@
 django
 djangorestframework
 Pillow
+sorl-thumbnail
+xhtml2pdf
 
-#for fixtures
+#for fixtures and tests
 factory_boy
