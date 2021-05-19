@@ -15,7 +15,7 @@
           <li class="nav__item"><a href="{% url 'logout' %}" class="nav__link link">Выход ({{ user.username }})</a></li>
 {% else %}
 
-          <li class="nav__item nav__item_disabled" name="/shoplist/"><a href="#" class="nav__link link">Список покупок <span class="badge badge_style_blue nav__badge" id="counter">{{ cart_count }}</span></a></li>
+          <li class="nav__item nav__item_disabled" name="/shoplist/"><a href="{% url 'recipes:cart' %}" class="nav__link link">Список покупок <span class="badge badge_style_blue nav__badge" id="counter">{{ cart_count }}</span></a></li>
       </ul>
         <ul class="nav__items list">
           <li class="nav__item" name="/user/auth/login/"><a href="{% url 'login' %}" class="nav__link link">Войти</a></li>

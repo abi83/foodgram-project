@@ -4,7 +4,9 @@ from datetime import date
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Value
+from django.db.models.expressions import Case, When
+from django.db.models import BooleanField
 from django.db.models.signals import pre_delete
 from django.db.utils import IntegrityError
 from django.dispatch import receiver
@@ -77,16 +79,14 @@ class Ingredient(models.Model):
 class RecipeQuerySet(models.QuerySet):
     def annotate_with_favorite_and_cart_prop(self, user_id: int):
         return self.annotate(is_favorite=Exists(
-            Favorite.objects.filter(
-                user_id=user_id,
-                recipe_id=OuterRef('pk'),
-            ),
+            Favorite.objects.filter(user_id=user_id, recipe_id=OuterRef('pk')),
         )).annotate(in_cart=Exists(
-            CartItem.objects.filter(
-                user_id=user_id,
-                recipe_id=OuterRef('pk'),
-            )
-        ))
+            CartItem.objects.filter(user_id=user_id, recipe_id=OuterRef('pk')))
+        )
+
+    def annotate_with_session_data(self, recipes_ids: list):
+        return self.annotate(in_cart=Case(When(id__in=recipes_ids, then=True))
+            ).annotate(is_favorite=Value(False))
 
 
 class Recipe(models.Model):

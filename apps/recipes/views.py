@@ -27,10 +27,14 @@ class RecipeAnnotateMixin:
         Annotate with favorite mark, select related authors.
         """
         query_set = super().get_queryset()
-        return query_set.select_related(
-            'author'
-        ).annotate_with_favorite_and_cart_prop(
-            user_id=self.request.user.id)
+        if self.request.user.is_authenticated:
+            return query_set.select_related(
+                'author'
+            ).annotate_with_favorite_and_cart_prop(
+                user_id=self.request.user.id)
+        return query_set.select_related('author').annotate_with_session_data(
+            self.request.session['cart']
+        )
 
 
 class BaseRecipeList(RecipeAnnotateMixin, ListView):
@@ -116,6 +120,26 @@ class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
                 .filter(liked_users__user=self.request.user))
 
 
+class Cart(BaseRecipeList):
+    template_name = 'recipes/cart.html'
+    page_title = 'cart'
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Recipe.objects.filter(id__in=self.request.session['cart'])
+        return Recipe.objects.filter(carts__in=CartItem.objects.filter(user=self.request.user))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Cart items for unauthorised users
+        """
+        if not self.request.user.is_authenticated:
+            self.extra_context = {
+                'cartitems': CartItem.objects.all()[:10]
+            }
+        return super().get_context_data()
+
+
 class RecipeDetail(RecipeAnnotateMixin, DetailView):
     template_name = 'recipes/recipe-detail.html'
     context_object_name = 'recipe'
@@ -133,11 +157,12 @@ class RecipeDetail(RecipeAnnotateMixin, DetailView):
         """
         Adding 'follow' value to context
         """
-        follow = Follow.objects.filter(
-            author=self.object.author,
-            follower=self.request.user
-        ).exists()
-        kwargs.update({'follow': follow})
+        if self.request.user.is_authenticated:
+            follow = Follow.objects.filter(
+                author=self.object.author,
+                follower=self.request.user
+            ).exists()
+            kwargs.update({'follow': follow})
         return super().get_context_data(**kwargs)
 
 
@@ -148,7 +173,7 @@ class RecipeIngredientSaveMixin(LoginRequiredMixin):
         Handle request data to create Recipe-Ingredients relation objects
         with bulk_create
         """
-        # a dict for all ingredients in DB. It returns an id on name key
+        # a dict for all ingredients in DB. It returns an id on 'name' key
         ingredients_dic = {ing['name']: ing['id']
                            for ing in Ingredient.objects.values('name', 'id')}
         objs = [RecipeIngredient(
@@ -191,9 +216,6 @@ class RecipeCreate(RecipeIngredientSaveMixin, CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
-        self.object.tag_breakfast = 'breakfast' in self.request.POST
-        self.object.tag_lunch = 'lunch' in self.request.POST
-        self.object.tag_dinner = 'dinner' in self.request.POST
         self.object = form.save()
         self.add_ingredients_to_recipe(self.request.POST, self.object)
         return super(ModelFormMixin, self).form_valid(form)
@@ -213,35 +235,17 @@ class Feed(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         three_recipes_id_subquery = Subquery(
-            Recipe.objects.filter(
-                author_id=OuterRef('author_id')
-            ).values_list('id', flat=True)[:3])
+            Recipe.objects
+                .filter(author_id=OuterRef('author_id'))
+                .values_list('id', flat=True)[:3])
         prefetch = Prefetch(
             'recipes',
             queryset=Recipe.objects.filter(id__in=three_recipes_id_subquery), )
         return (User.objects
-            .filter(following__follower=self.request.user)
-            .prefetch_related(prefetch)
-            .annotate(recipes_count=Count('recipes'))
-            .order_by('-recipes_count'))
-
-
-class Cart(LoginRequiredMixin, ListView):
-    template_name = 'recipes/cart.html'
-    context_object_name = 'cartitems'
-
-    def get_queryset(self):
-        return CartItem.objects.filter(user=self.request.user
-                                       ).select_related('recipe')
-
-
-def cart_count(request):
-    """
-    A context processor making 'cart_count' variable available in templates
-    """
-    return {
-        'cart_count': CartItem.objects.filter(user=request.user).count()
-    }
+                .filter(following__follower=self.request.user)
+                .prefetch_related(prefetch)
+                .annotate(recipes_count=Count('recipes'))
+                .order_by('-recipes_count'))
 
 
 class ShopList(View):
@@ -259,13 +263,13 @@ class ShopList(View):
             'customer_name': request.user.get_full_name(),
             'ingredients': {},
         }
-        for item in items:
-            try:
-                data['ingredients'][item.ingredient.name]['value'] += item.count
-            except KeyError:
-                data['ingredients'][item.ingredient.name] = {
-                    'value': item.count,
-                    'unit': item.ingredient.unit
+        for itm in items:
+            try:  # add more count for existing ingredient
+                data['ingredients'][itm.ingredient.name]['value'] += itm.count
+            except KeyError:  # create new ingredient
+                data['ingredients'][itm.ingredient.name] = {
+                    'value': itm.count,
+                    'unit': itm.ingredient.unit
                 }
         pdf = render_to_pdf('recipes/shop-list.html', data)
         filename = f'Shop_list_on_{datetime.date.today()}.pdf'
