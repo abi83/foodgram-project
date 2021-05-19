@@ -253,14 +253,18 @@ class ShopList(View):
     A .pdf view
     """
     def get(self, request, *args, **kwargs):
-        carts = CartItem.objects.filter(user=self.request.user
-                                        ).select_related('recipe')
-        recipes = Recipe.objects.filter(carts__in=carts)
+        if request.user.is_authenticated:
+            carts = CartItem.objects.filter(user=self.request.user)
+            recipes = Recipe.objects.filter(carts__in=carts)
+            username = request.user.get_full_name()
+        else:
+            recipes = Recipe.objects.filter(id__in=request.session['cart'])
+            username = 'Anonymous'
         items = RecipeIngredient.objects.filter(recipe__in=recipes)
         data = {
             'time': datetime.datetime.now(),
             'number': recipes.count(),
-            'customer_name': request.user.get_full_name(),
+            'customer_name': username,
             'ingredients': {},
         }
         for itm in items:

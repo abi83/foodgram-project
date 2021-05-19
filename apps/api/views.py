@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.api.serializers import IngredientSerializer
+from apps.api.serializers import IngredientSerializer, FavoriteSerializer, SubscribeSerializer
 from apps.recipes.models import Ingredient, Favorite, Recipe, Follow, CartItem
 
 
@@ -34,43 +34,21 @@ class IngredientList(generics.ListAPIView):
 
 
 class FavoritesApi(generics.CreateAPIView, generics.DestroyAPIView):
-    def post(self, request, *args, **kwargs):
-        recipe = Recipe.objects.get(slug=request.data.get('recipe_slug'))
-        _, created = Favorite.objects.get_or_create(user=request.user,
-                                                    recipe=recipe)
-        if created:
-            return Response({'status': 'successfully created'},
-                            status=status.HTTP_201_CREATED)
-        return Response({'status': 'favorite instance already exists'},
-                        status=status.HTTP_400_BAD_REQUEST)
+    serializer_class = FavoriteSerializer
 
-    def delete(self, request, *args, **kwargs):
-        get_object_or_404(Favorite,
-                          recipe__slug=kwargs.get('recipe_slug'),
-                          user=request.user,
-                          ).delete()
-        return Response({'status': 'successfully deleted'},
-                        status=status.HTTP_200_OK)
+    def get_object(self):
+        return get_object_or_404(Favorite,
+                                 recipe__slug=self.kwargs.get('recipe_slug'),
+                                 user=self.request.user,)
 
 
-class SubscriptionApi(APIView):
-    def post(self, request, *args, **kwargs):
-        _, created = Follow.objects.get_or_create(
-            follower=self.request.user,
-            author_id=request.data.get('id'))
-        if created:
-            return Response({'status': 'successfully created'},
-                            status=status.HTTP_201_CREATED)
-        return Response({'status': 'follow instance already exists'},
-                        status=status.HTTP_400_BAD_REQUEST)
+class SubscriptionApi(generics.CreateAPIView, generics.DestroyAPIView):
+    serializer_class = SubscribeSerializer
 
-    def delete(self, request, *args, **kwargs):
-        get_object_or_404(Follow,
-                          author_id=kwargs.get('author_id'),
-                          follower=request.user,
-                          ).delete()
-        return Response({'status': 'successfully deleted'},
-                        status=status.HTTP_200_OK)
+    def get_object(self):
+        return get_object_or_404(Follow,
+                                 follower=self.request.user,
+                                 author_id=self.kwargs.get('author_id'))
 
 
 class CartAPI(APIView):

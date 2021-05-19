@@ -83,7 +83,7 @@ class Api {
     })
       .then( e => {
           if(e.ok) {
-              return e.json()
+              return e
           }
           return Promise.reject(e.statusText)
       })
@@ -110,7 +110,7 @@ class Api {
     })
       .then( e => {
         if(e.ok) {
-          return e.json()
+          return e
         }
         return Promise.reject(e.statusText)
       })
