@@ -9,17 +9,17 @@
   </div>
   <div class="card-list card-list_column">
     <ul class="shopping-list">
-      {% for item in cartitems %}
-        <li class="shopping-list__item" data-id="{{ item.recipe.slug }}">
+      {% for recipe in recipes %}
+        <li class="shopping-list__item" data-id="{{ recipe.slug }}">
           <div class="recipe recipe_reverse">
             {% load thumbnail %}
-            {% thumbnail item.recipe.image "90x90" crop="center" upscale=True as im %}
-              <img src="{{ im.url }}" alt="Изображение {{ item.recipe.title }}" class="recipe__image recipe__image_big" title="{{ recipe.title }}">
+            {% thumbnail recipe.image "90x90" crop="center" upscale=True as im %}
+              <img src="{{ im.url }}" alt="Изображение {{ recipe.title }}" class="recipe__image recipe__image_big" title="{{ title }}">
             {% endthumbnail %}
-            <a class="link" href="{% url 'recipes:recipe-detail' slug=item.recipe.slug %}" target="_blank">
-              <h3 class="recipe__title">{{ item.recipe.title }}</h3>
+            <a class="link" href="{% url 'recipes:recipe-detail' slug=recipe.slug %}" target="_blank">
+              <h3 class="recipe__title">{{ recipe.title }}</h3>
             </a>
-            <p class="recipe__text"><span class="icon-time"></span> {{ item.recipe.time }} min.</p>
+            <p class="recipe__text"><span class="icon-time"></span> {{ recipe.time }} min.</p>
           </div>
           <a href="#" class="shopping-list__button link">Удалить</a>
         </li>

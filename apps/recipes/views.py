@@ -116,6 +116,26 @@ class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
                 .filter(liked_users__user=self.request.user))
 
 
+class Cart(BaseRecipeList):
+    template_name = 'recipes/cart.html'
+    page_title = 'cart'
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Recipe.objects.filter(id__in=self.request.session['cart'])
+        return Recipe.objects.filter(carts__in=CartItem.objects.filter(user=self.request.user))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Cart items for unauthorised users
+        """
+        if not self.request.user.is_authenticated:
+            self.extra_context = {
+                'cartitems': CartItem.objects.all()[:10]
+            }
+        return super().get_context_data()
+
+
 class RecipeDetail(RecipeAnnotateMixin, DetailView):
     template_name = 'recipes/recipe-detail.html'
     context_object_name = 'recipe'
@@ -222,31 +242,6 @@ class Feed(LoginRequiredMixin, ListView):
                 .prefetch_related(prefetch)
                 .annotate(recipes_count=Count('recipes'))
                 .order_by('-recipes_count'))
-
-
-class Cart(LoginRequiredMixin, ListView):
-    template_name = 'recipes/cart.html'
-    context_object_name = 'cartitems'
-
-    def get_queryset(self):
-        return CartItem.objects.filter(user=self.request.user
-                                       ).select_related('recipe')
-
-
-def cart_count(request):
-    """
-    A context processor making 'cart_count' variable available in templates
-    """
-    if request.user.is_authenticated:
-        return {
-            'cart_count': CartItem.objects.filter(user=request.user).count()
-        }
-    count = request.session.get('cart_count', False)
-    # breakpoint()
-    if count:
-        request.session['cart_count'] = count + 1
-        return {'cart_count': request.session['cart_count']}
-    return {'cart_count': 1}
 
 
 class ShopList(View):
