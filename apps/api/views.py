@@ -74,10 +74,11 @@ class SubscriptionApi(APIView):
 
 
 class CartAPI(APIView):
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny, ]
     # TODO: make smth with anonymous users
 
     def post(self, request, *args, **kwargs):
+
         recipe = Recipe.objects.get(slug=request.data.get('recipe_slug'))
         _, created = CartItem.objects.get_or_create(
             user=self.request.user,

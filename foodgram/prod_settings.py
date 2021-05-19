@@ -1,4 +1,6 @@
-# from .settings import *
+from .settings import *
 
 
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
+        'rest_framework.renderers.JSONRenderer',
+    )

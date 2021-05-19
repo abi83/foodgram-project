@@ -44,12 +44,10 @@ function Ingredients() {
                              <input id="valueIngredient_${cur}" name="valueIngredient_${cur}" type="hidden" value="${data.value}">
                              <input id="unitsIngredient_${cur}" name="unitsIngredient_${cur}" type="hidden" value="${data.units}">`;
             cur++;
-            
             ingredientsContainer.appendChild(elem);
         }
     };
     // удаление элемента
-
     const eventDelete = (e) => {
         if(e.target.classList.contains('form__field-item-delete')) {
             const item = e.target.closest('.form__field-item-ingredient');

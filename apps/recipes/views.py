@@ -241,7 +241,12 @@ def cart_count(request):
         return {
             'cart_count': CartItem.objects.filter(user=request.user).count()
         }
-    return {}
+    count = request.session.get('cart_count', False)
+    # breakpoint()
+    if count:
+        request.session['cart_count'] = count + 1
+        return {'cart_count': request.session['cart_count']}
+    return {'cart_count': 1}
 
 
 class ShopList(View):
