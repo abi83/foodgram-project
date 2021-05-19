@@ -109,6 +109,10 @@ class CartAPI(APIView):
                               user=self.request.user,
                               recipe__slug=kwargs.get('recipe_slug'),
                               ).delete()
-
+            return Response({'status': self.resp_mesg[200]},
+                            status=status.HTTP_200_OK)
+        recipe = get_object_or_404(Recipe, slug=kwargs.get('recipe_slug'))
+        request.session['cart'].remove(recipe.pk)
+        request.session.modified = True
         return Response({'status': self.resp_mesg[200]},
                         status=status.HTTP_200_OK)

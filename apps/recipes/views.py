@@ -27,10 +27,14 @@ class RecipeAnnotateMixin:
         Annotate with favorite mark, select related authors.
         """
         query_set = super().get_queryset()
-        return query_set.select_related(
-            'author'
-        ).annotate_with_favorite_and_cart_prop(
-            user_id=self.request.user.id)
+        if self.request.user.is_authenticated:
+            return query_set.select_related(
+                'author'
+            ).annotate_with_favorite_and_cart_prop(
+                user_id=self.request.user.id)
+        return query_set.select_related('author').annotate_with_session_data(
+            self.request.session['cart']
+        )
 
 
 class BaseRecipeList(RecipeAnnotateMixin, ListView):
