@@ -5,7 +5,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.api.serializers import IngredientSerializer, FavoriteSerializer, SubscribeSerializer
+from apps.api.serializers import (IngredientSerializer, FavoriteSerializer,
+                                  SubscribeSerializer)
 from apps.recipes.models import Ingredient, Favorite, Recipe, Follow, CartItem
 
 
@@ -34,6 +35,9 @@ class IngredientList(generics.ListAPIView):
 
 
 class FavoritesApi(generics.CreateAPIView, generics.DestroyAPIView):
+    """
+    Front request format: {"recipe_slug": "some-recipe-slug"}
+    """
     serializer_class = FavoriteSerializer
 
     def get_object(self):
@@ -43,12 +47,19 @@ class FavoritesApi(generics.CreateAPIView, generics.DestroyAPIView):
 
 
 class SubscriptionApi(generics.CreateAPIView, generics.DestroyAPIView):
+    """
+    Front request format: {"id": ":int"}
+    id: id of an author to follow
+    """
     serializer_class = SubscribeSerializer
 
     def get_object(self):
         return get_object_or_404(Follow,
                                  follower=self.request.user,
                                  author_id=self.kwargs.get('author_id'))
+
+    def perform_create(self, serializer):
+        serializer.save(follower=self.request.user)
 
 
 class CartAPI(APIView):
