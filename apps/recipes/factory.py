@@ -47,7 +47,7 @@ class RecipeFactory(django.DjangoModelFactory):
         return Faker().pybool()
 
     @factory.post_generation
-    def ingredients(self, create, extracted, **kwargs):
+    def ingredients(self, create, extracted):
         if not create:
             return
         if extracted:

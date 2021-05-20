@@ -85,6 +85,7 @@ class RecipeQuerySet(models.QuerySet):
         )
 
     def annotate_with_session_data(self, recipes_ids: list):
+        recipes_ids = recipes_ids if recipes_ids is not None else []
         return self.annotate(in_cart=Case(When(id__in=recipes_ids, then=True))
             ).annotate(is_favorite=Value(False))
 

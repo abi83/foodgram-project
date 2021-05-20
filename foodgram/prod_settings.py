@@ -1,4 +1,4 @@
-from .settings import *
+from foodgram.settings import *  # noqa
 
 
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (

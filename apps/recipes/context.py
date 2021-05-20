@@ -9,4 +9,7 @@ def cart_count(request):
         return {
             'cart_count': CartItem.objects.filter(user=request.user).count()
         }
-    return {'cart_count': len(request.session['cart'])}
+    cart_ids = (request.session.get('cart')
+                if request.session.get('cart')
+                else [])
+    return {'cart_count': len(cart_ids)}

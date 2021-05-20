@@ -22,15 +22,14 @@ class ApiTests(TestCase):
 
     def test_ingredients_filter(self):
         """
-        Very basic test example for CI purposes
+        Very basic test example
         """
         unit = Unit.objects.create(name='test-unit', short='t-un')
         unit.save()
         names = ['one', 'two', 'one two']
         ingredients = [Ingredient(name=name, unit=unit) for name in names]
         Ingredient.objects.bulk_create(ingredients)
-        queries = ['one', 'two', 'one two']
-        for query in queries:
+        for query in names:
             with self.subTest(msg=f'Checking {query} query'):
                 resp = self.client.get(
                     reverse('api:ingredient-api') + f'?query={query}')

@@ -17,11 +17,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with open(
-                os.getcwd() + '\\apps\\recipes\\fixtures_data\\ingredients.csv',
+                os.getcwd() + '\\apps\\recipes'
+                              '\\fixtures_data\\ingredients.csv',
                 encoding="utf-8") as file:
             lines_count = sum(1 for _ in file)
         with open(
-                os.getcwd() + '\\apps\\recipes\\fixtures_data\\ingredients.csv',
+                os.getcwd() + '\\apps\\recipes'
+                              '\\fixtures_data\\ingredients.csv',
                 encoding="utf-8") as file:
             csv_data = csv.reader(file)
             ingredients = []
@@ -32,10 +34,13 @@ class Command(BaseCommand):
                     ingredient_name, unit_label = line
                 except ValueError as error:
                     logger.warning(error, f'on line: {line}')
-                    raise ValueError(f'Fixtures file is invalid in line: {line}') from error
+                    raise ValueError(
+                        f'Fixtures file is invalid in line: {line}') from error
                 if unit_label == '':
                     unit_label = '--'
-                current_unit = Unit.objects.get_or_create(name=unit_label.lower(), short=unit_label[:9].lower())[0]
+                current_unit = Unit.objects.get_or_create(
+                    name=unit_label.lower(),
+                    short=unit_label[:9].lower())[0]
                 # appending new ingredient
                 ingredients.append(
                     Ingredient(
@@ -48,10 +53,13 @@ class Command(BaseCommand):
                     try:
                         Ingredient.objects.bulk_create(ingredients)
                         created_counter += 10
-                    except IntegrityError as error:
-                        logger.warning(f'Error: some of ingredients in {ingredients} already exists')
+                    except IntegrityError:
+                        logger.warning(
+                            f'Error: some of ingredients in {ingredients}'
+                            f'already exists')
                         self.stdout.write(
-                            self.style.WARNING('Some of ingredients already exist'),
+                            self.style.WARNING(
+                                'Some of ingredients already exist'),
                             ending='\r'
                         )
                     ingredients = []

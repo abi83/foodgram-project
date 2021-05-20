@@ -33,7 +33,7 @@ class RecipeAnnotateMixin:
             ).annotate_with_favorite_and_cart_prop(
                 user_id=self.request.user.id)
         return query_set.select_related('author').annotate_with_session_data(
-            self.request.session['cart']
+            self.request.session.get('cart')
         )
 
 
@@ -126,7 +126,8 @@ class Cart(BaseRecipeList):
 
     def get_queryset(self):
         if not self.request.user.is_authenticated:
-            return Recipe.objects.filter(id__in=self.request.session['cart'])
+            cart_ids = self.request.session.get('cart') if self.request.session.get('cart') else []
+            return Recipe.objects.filter(id__in=cart_ids)
         return Recipe.objects.filter(carts__in=CartItem.objects.filter(user=self.request.user))
 
     def get_context_data(self, *, object_list=None, **kwargs):

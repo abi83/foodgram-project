@@ -16,7 +16,6 @@ class IngredientAdmin(admin.ModelAdmin):
 class IngredientInline(admin.TabularInline):
     model = RecipeIngredient
     extra = 1
-    # raw_id_fields = ('ingredient', )
 
 
 @admin.register(Recipe)
@@ -29,7 +28,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
 
 @admin.register(Favorite)
-class FavoriteAdmon(admin.ModelAdmin):
+class FavoriteAdmin(admin.ModelAdmin):
     pass
 
 

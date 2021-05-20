@@ -15,3 +15,4 @@ add any recipe in shop-list. Pdf with ingredients to by - is a very cool idea!
 5. Filter backend for ingredients API and recipes tag
 6. Fixtures generated automatically
 7. Different approaches in api: slug, id and query requests
+8. Session based cart
