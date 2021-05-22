@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Ошибка 404{% endblock %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+{% block content %}
+
+  <div class="custom-center-block">
+    <p class="custom-text-block">Что-то пошло не так. Мы уже разбираемся. Вы будете перенаправлены на главную страницу через <span id="timer" style="font-weight: bold; padding:0 1em;">5</span> секунд...</p>
+    <div class="custom-button-block">
+      <a href="{% url 'recipes:index' %}">
+        <button class="button button_style_blue">Перейти на главную</button>
+      </a>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script src="{% static 'js/indexRedirect.js' %}"></script>
+{% endblock %}

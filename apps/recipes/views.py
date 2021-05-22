@@ -1,11 +1,12 @@
 import datetime
+import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q, Prefetch, Subquery, OuterRef, Count
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import (ListView, DetailView, CreateView,
                                   UpdateView, DeleteView, )
@@ -19,6 +20,7 @@ from apps.recipes.paginator import FixedPaginator
 from apps.recipes.utils import render_to_pdf
 
 User = get_user_model()
+logger = logging.getLogger('foodgram')
 
 
 class RecipeAnnotateMixin:
@@ -283,3 +285,18 @@ class ShopList(View):
             content_type='application/pdf',
             headers={'Content-Disposition': f"attachment; filename={filename}"}
         )
+
+
+class Handler404(View):
+    @staticmethod
+    def get(request, exception):  # noqa
+        logger.warning("404: page not found at {}".format(request.path))
+        return render(request, 'misc/404.html',
+                      {'path': request.path}, status=404)
+
+
+class Handler500(View):
+    @staticmethod
+    def dispatch(request, *args, **kwargs):
+        logger.error("500: page is broken {}".format(request.path))
+        return render(request, 'misc/500.html', status=500)

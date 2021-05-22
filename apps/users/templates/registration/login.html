@@ -11,7 +11,7 @@
   <div class="form-container">
     <form class="form" method="post" action="{% url 'login' %}">
       {% csrf_token %}
-      {% include 'user_form.html' %}
+      {% include 'users/user_form.html' %}
       <div class="form__footer">
         <button class="button button_style_blue">Войти</button>
         <a href="{% url 'password_reset' %}" class="form__forgot-link">Забыли пароль?</a>

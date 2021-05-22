@@ -8,6 +8,9 @@ from xhtml2pdf import pisa
 
 
 def fetch_pdf_resources(uri, rel):
+    """
+    Convert path to css styles to pdf render
+    """
     if uri.find(settings.MEDIA_URL) != -1:
         path = os.path.join(
             settings.MEDIA_ROOT,
