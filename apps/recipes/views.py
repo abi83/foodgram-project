@@ -4,7 +4,7 @@ import logging
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Q, Prefetch, Subquery, OuterRef, Count
+from django.db.models import Prefetch, Subquery, OuterRef, Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy

@@ -45,7 +45,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='author')
+    id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),
+                                            source='author')
 
     class Meta:
         model = Follow

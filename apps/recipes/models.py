@@ -83,6 +83,7 @@ class Tag(models.Model):
         null=False,
         verbose_name='Tag slug for forms and imputs'
     )
+
     def __str__(self):
         return self.name
 

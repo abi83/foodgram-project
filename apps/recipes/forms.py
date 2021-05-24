@@ -10,7 +10,6 @@ class RecipeForm(forms.ModelForm):
         # TODO: validate minimum one ingredient is checked
     tags = forms.CheckboxSelectMultiple()
 
-
     class Meta:
         model = Recipe
         exclude = ('slug', 'author', 'is_active',)

@@ -67,7 +67,7 @@ class CartAPI(APIView):
     resp_mesg = {
         status.HTTP_201_CREATED: 'successfully created',
         status.HTTP_400_BAD_REQUEST: 'recipe already in shop list',
-        200: 'successfully deleted',
+        status.HTTP_200_OK: 'successfully deleted',
     }
 
     def post(self, request, *args, **kwargs):
