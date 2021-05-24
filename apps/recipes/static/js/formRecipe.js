@@ -89,7 +89,7 @@ const cbEventInput = (elem) => {
             formDropdownItems.innerHTML = items;
         }
     })
-        // TODO: show a help text is less than 3 symbols provided
+    // TODO: show a help text is less than 3 symbols provided
     .catch( e => {
         console.log(e)
     })

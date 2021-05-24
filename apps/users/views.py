@@ -7,8 +7,4 @@ from apps.users.forms import CreationForm
 class SignUp(CreateView):
     form_class = CreationForm
     success_url = reverse_lazy('login')
-    template_name = 'registration_form.html'
-
-    # def post(self, request, *args, **kwargs):
-    #     print(request.POST)
-    #     return super().post(request, *args, **kwargs)
+    template_name = 'users/registration_form.html'

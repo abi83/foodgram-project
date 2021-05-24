@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from factory import fuzzy
 
 from apps.recipes.factory import RecipeFactory, RecipeIngredientFactory
-from apps.recipes.models import Ingredient, Recipe
+from apps.recipes.models import Ingredient, Recipe, Tag
 from foodgram.utils.progress import Progress
 
 
@@ -21,14 +21,15 @@ class Command(BaseCommand):
     RECIPES = 50
 
     def add_arguments(self, parser):
-        parser.add_argument('number', nargs='?', type=int, default=self.RECIPES)
+        parser.add_argument('number', nargs='?', type=int,
+                            default=self.RECIPES)
 
     @staticmethod
     def populate_recipes(number):
         for i in range(number):
             Progress.show_progress(i / number, 'Recipes')
             author = fuzzy.FuzzyChoice(User.objects.all())
-            RecipeFactory.create(author=author)
+            RecipeFactory.create(author=author, tags=Tag.objects.all())
         Progress.report_success(number, 'Recipes')
 
     @staticmethod
@@ -40,7 +41,9 @@ class Command(BaseCommand):
             for n in range(random.randint(2, 10)):
                 ingredient = fuzzy.FuzzyChoice(Ingredient.objects.all())
                 count = fuzzy.FuzzyInteger(1, 40)
-                RecipeIngredientFactory.create(recipe=recipe, ingredient=ingredient, count=count)
+                RecipeIngredientFactory.create(recipe=recipe,
+                                               ingredient=ingredient,
+                                               count=count)
             i += 1
         Progress.report_success(len(recipes), 'Recipe-Ingredient')
 

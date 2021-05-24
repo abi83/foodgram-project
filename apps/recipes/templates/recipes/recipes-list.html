@@ -8,15 +8,15 @@
     <h1 class="main__title">{{ page_title }}</h1>
     <ul class="tags">
       <li class="tags__item">
-        <p id="tag_breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active" href="#"></p>
-        <span class="tags__label">Завтрак</span>
+        <p id="breakfast" class="tags__checkbox tags__checkbox_style_orange tags__checkbox_active"></p>
+        <label for="breakfast" class="tags__label">Завтрак</label>
       </li>
       <li class="tags__item">
-        <p id="tag_lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active" href="#"></p>
-        <span for="lunch" class="tags__label">Обед</span>
+        <p id="lunch" class="tags__checkbox tags__checkbox_style_green tags__checkbox_active"></p>
+        <label for="lunch" class="tags__label">Обед</label>
       </li>
       <li class="tags__item">
-        <p id="tag_dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active" href="#"></p>
+        <p id="dinner" class="tags__checkbox tags__checkbox_style_purple tags__checkbox_active"></p>
         <label for="dinner" class="tags__label">Ужин</label>
       </li>
     </ul>
@@ -31,6 +31,18 @@
   {% if page_obj.has_other_pages %}
     {% include 'paginator.html' with page_obj=page_obj %}
   {% endif %}
+  <script>
+    const badgeClasses = {
+      Завтрак: 'badge_style_orange',
+      Обед: 'badge_style_green',
+      Ужин: 'badge_style_purple'
+    }
+    document.querySelectorAll('.badge').forEach(el=>{
+      try {
+        el.classList.add(badgeClasses[el.innerText])
+      } catch (e) {}
+    })
+  </script>
 {% endblock %}
 {% block scripts %}
   <script src="{% static 'js/components/MainCards.js' %}"></script>

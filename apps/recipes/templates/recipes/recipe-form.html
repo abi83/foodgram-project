@@ -10,18 +10,11 @@
   <p class="form__label">Tags</p>
   <div class="form__field-group">
     <div class="tags">
-      <div class="tags__item">
-        {{ form.tag_breakfast }}
-        <label for="{{ form.tag_breakfast.auto_id }}" class="tags__label">{{ form.tag_breakfast.label }}</label>
-      </div>
-      <div class="tags__item">
-        {{ form.tag_lunch }}
-        <label for="{{ form.tag_lunch.auto_id }}" class="tags__label">{{ form.tag_lunch.label }}</label>
-      </div>
-      <div class="tags__item">
-        {{ form.tag_dinner }}
-        <label for="{{ form.tag_dinner.auto_id }}" class="tags__label">{{ form.tag_dinner.label }}</label>
-      </div>
+      {% for tag in form.tags %}
+        <div class="tags__item">
+          {{ tag }}
+        </div>
+      {% endfor %}
     </div>
     <span class="form__input-info" style="margin-bottom: 0;">Выберите один или несколько тэгов</span>
     <span class="form__error">{{ form.tag_breakfast.errors }}</span>
@@ -80,3 +73,14 @@
     <span class="form__error">{{ form.image.errors }}</span>
   </div>
 </div>
+<script>
+  const tagClasses = {
+    id_tags_0: {name: 'Завтрак', class: 'tags__checkbox_style_orange'},
+    id_tags_1: {name: 'Обед', class: 'tags__checkbox_style_green'},
+    id_tags_2: {name: 'Ужин', class: 'tags__checkbox_style_purple'}
+  }
+  document.querySelectorAll('.tags__checkbox').forEach(el=>{
+    el.classList.add(tagClasses[el.id].class)
+    el.parentElement.classList.add('tags__label')
+  })
+</script>

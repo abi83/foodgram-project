@@ -1,10 +1,11 @@
 import random
 import uuid
+
 import factory
+from PIL.ImageColor import colormap
 from django.contrib.auth import get_user_model
 from factory import django, fuzzy
 from faker import Faker
-from PIL.ImageColor import colormap
 
 from apps.recipes.models import Recipe, Ingredient, RecipeIngredient
 from apps.users.factory import UserFactory
@@ -34,26 +35,14 @@ class RecipeFactory(django.DjangoModelFactory):
         sentences = random.randint(2, 7)
         return ' '.join(fake.paragraphs(nb=sentences))
 
-    @factory.lazy_attribute
-    def tag_breakfast(self):
-        return Faker().pybool()
-
-    @factory.lazy_attribute
-    def tag_lunch(self):
-        return Faker().pybool()
-
-    @factory.lazy_attribute
-    def tag_dinner(self):
-        return Faker().pybool()
-
     @factory.post_generation
-    def ingredients(self, create, extracted, **kwargs):
+    def tags(self, create, extracted):
         if not create:
             return
         if extracted:
-            for ingredient in extracted:
-                if random.random() < 0.01:
-                    self.ingredients.add(ingredient)
+            for tag in extracted:
+                if random.random() < 0.3:
+                    self.tags.add(tag)
 
     class Meta:
         model = Recipe

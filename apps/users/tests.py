@@ -1,12 +1,9 @@
 from uuid import uuid1
 
-from faker import Faker
-from django.conf import settings
-from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-
+from faker import Faker
 
 from apps.users.factory import UserFactory
 from apps.users.forms import CreationForm
@@ -86,4 +83,3 @@ class UserTests(TestCase):
         form = CreationForm(data=user_data)
         self.assertFalse(form.is_valid())
         self.assertIn('email', form.errors)
-

@@ -6,13 +6,13 @@
 {% endblock %}
 {% block content %}
   <div class="main__header">
-    <h1 class="main__title">Confirm deletion</h1>
+    <h1 class="main__title">Подтвердите удаление</h1>
   </div>
 
   <form method="post">
     {% csrf_token %}
     <div class="custom-center-block">
-    <p class="custom-text-block">Are you sure you want to delete "{{ object }}"?</p>
+    <p class="custom-text-block">Вы уверены, что хотите удалить "{{ object }}"?</p>
     </div>
     <div class="custom-button-block">
       <input class="button button_style_blue" type="submit" value="Confirm">

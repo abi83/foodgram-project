@@ -1,11 +1,12 @@
 import datetime
+import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q, Prefetch, Subquery, OuterRef, Count
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import (ListView, DetailView, CreateView,
                                   UpdateView, DeleteView, )
@@ -14,11 +15,12 @@ from django.views.generic.edit import ModelFormMixin
 
 from apps.recipes.forms import RecipeForm
 from apps.recipes.models import (
-    Recipe, RecipeIngredient, Ingredient, Follow, CartItem)
+    Recipe, RecipeIngredient, Ingredient, Follow, CartItem, Tag)
 from apps.recipes.paginator import FixedPaginator
 from apps.recipes.utils import render_to_pdf
 
 User = get_user_model()
+logger = logging.getLogger('foodgram')
 
 
 class RecipeAnnotateMixin:
@@ -31,10 +33,11 @@ class RecipeAnnotateMixin:
             return query_set.select_related(
                 'author'
             ).annotate_with_favorite_and_cart_prop(
-                user_id=self.request.user.id)
+                user_id=self.request.user.id
+            ).prefetch_related('tags')
         return query_set.select_related('author').annotate_with_session_data(
-            self.request.session['cart']
-        )
+            self.request.session.get('cart')
+            ).prefetch_related('tags')
 
 
 class BaseRecipeList(RecipeAnnotateMixin, ListView):
@@ -57,14 +60,11 @@ class BaseRecipeList(RecipeAnnotateMixin, ListView):
         query_set = (super().get_queryset()
                      .defer('description')
                      .filter(is_active=True))
-        tags = self.request.GET.get('tags', None)
+        tags = self.request.GET.get('tags')
         if tags is None:
             return query_set
-        filter_query = Q()
-        for tag in tags.split(','):
-            if tag in ['tag_breakfast', 'tag_lunch', 'tag_dinner']:
-                filter_query.add(Q(**{tag: True}), Q.OR)
-        return query_set.filter(filter_query)
+        tags_items = Tag.objects.filter(slug__in=tags.split(','))
+        return query_set.filter(tags__in=tags_items)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """
@@ -126,8 +126,12 @@ class Cart(BaseRecipeList):
 
     def get_queryset(self):
         if not self.request.user.is_authenticated:
-            return Recipe.objects.filter(id__in=self.request.session['cart'])
-        return Recipe.objects.filter(carts__in=CartItem.objects.filter(user=self.request.user))
+            cart_ids = (self.request.session.get('cart')
+                        if self.request.session.get('cart')
+                        else [])
+            return Recipe.objects.filter(id__in=cart_ids)
+        return Recipe.objects.filter(
+            carts__in=CartItem.objects.filter(user=self.request.user))
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """
@@ -179,8 +183,7 @@ class RecipeIngredientSaveMixin(LoginRequiredMixin):
         objs = [RecipeIngredient(
             recipe=recipe,
             ingredient_id=ingredients_dic[value],
-            count=request_data.get('valueIngredient_' + key.split('_')[1]),
-            )
+            count=request_data.get('valueIngredient_' + key.split('_')[1]),)
             for key, value in request_data.items()
             if key.startswith('nameIngredient_')
         ]
@@ -282,3 +285,18 @@ class ShopList(View):
             content_type='application/pdf',
             headers={'Content-Disposition': f"attachment; filename={filename}"}
         )
+
+
+class Handler404(View):
+    @staticmethod
+    def get(request, exception):  # noqa
+        logger.warning("404: page not found at {}".format(request.path))
+        return render(request, 'misc/404.html',
+                      {'path': request.path}, status=404)
+
+
+class Handler500(View):
+    @staticmethod
+    def dispatch(request, *args, **kwargs):
+        logger.error("500: page is broken {}".format(request.path))
+        return render(request, 'misc/500.html', status=500)
