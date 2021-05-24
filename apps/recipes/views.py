@@ -15,7 +15,7 @@ from django.views.generic.edit import ModelFormMixin
 
 from apps.recipes.forms import RecipeForm
 from apps.recipes.models import (
-    Recipe, RecipeIngredient, Ingredient, Follow, CartItem)
+    Recipe, RecipeIngredient, Ingredient, Follow, CartItem, Tag)
 from apps.recipes.paginator import FixedPaginator
 from apps.recipes.utils import render_to_pdf
 
@@ -63,11 +63,8 @@ class BaseRecipeList(RecipeAnnotateMixin, ListView):
         tags = self.request.GET.get('tags')
         if tags is None:
             return query_set
-        filter_query = Q()
-        for tag in tags.split(','):
-            if tag in ['tag_breakfast', 'tag_lunch', 'tag_dinner']:
-                filter_query.add(Q(**{tag: True}), Q.OR)
-        return query_set.filter(filter_query)
+        tags_items = Tag.objects.filter(slug__in=tags.split(','))
+        return query_set.filter(tags__in=tags_items)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """

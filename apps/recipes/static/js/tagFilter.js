@@ -1,13 +1,13 @@
 const originURL = new URL(window.location);
 const originURLParams = originURL.searchParams;
-const tagsParamsString = originURLParams.get('tags') ? originURLParams.get('tags') : 'tag_breakfast,tag_lunch,tag_dinner';
+const tagsParamsString = originURLParams.get('tags') ? originURLParams.get('tags') : 'breakfast,lunch,dinner';
 const paginationLInks = document.querySelectorAll('.pagination__link')
 const tagLinks = document.querySelectorAll('.tags__checkbox')
 
 const tagsObj = {
-  tag_breakfast: tagsParamsString.includes('tag_breakfast'),
-  tag_lunch: tagsParamsString.includes('tag_lunch'),
-  tag_dinner: tagsParamsString.includes('tag_dinner'),
+  breakfast: tagsParamsString.includes('breakfast'),
+  lunch: tagsParamsString.includes('lunch'),
+  dinner: tagsParamsString.includes('dinner'),
 }
 function tagsObjToString(tObj) {
     let tags = '';
