@@ -6,12 +6,13 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Exists, OuterRef, Value
 from django.db.models.expressions import Case, When
-from django.db.models import BooleanField
 from django.db.models.signals import pre_delete
 from django.db.utils import IntegrityError
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
+
+from apps.recipes.utils import get_first_user_id
 
 User = get_user_model()
 
@@ -23,16 +24,12 @@ class Unit(models.Model):
     name = models.CharField(
         max_length=127,
         unique=True,
-        blank=False,
-        null=False,
         verbose_name='Unit name',
         help_text='Ingredient measure units. Eg: gram, kilogram, spoon',
     )
     short = models.CharField(
         max_length=9,
         unique=True,
-        blank=False,
-        null=False,
         verbose_name='Unit shortened name',
         help_text='Unit shortened name. Max: 9 symbols.',
     )
@@ -61,8 +58,6 @@ class Ingredient(models.Model):
         Unit,
         on_delete=models.RESTRICT,
         related_name='Ingredient',
-        blank=False,
-        null=False,
         verbose_name='Ingredient unit',
         help_text='Unit for current Ingredient',
     )
@@ -86,15 +81,14 @@ class RecipeQuerySet(models.QuerySet):
 
     def annotate_with_session_data(self, recipes_ids: list):
         recipes_ids = recipes_ids if recipes_ids is not None else []
-        return self.annotate(in_cart=Case(When(id__in=recipes_ids, then=True))
+        return self.annotate(
+            in_cart=Case(When(id__in=recipes_ids, then=True))
             ).annotate(is_favorite=Value(False))
 
 
 class Recipe(models.Model):
     title = models.CharField(
         max_length=255,
-        blank=False,
-        null=True,
         verbose_name='Recipe title'
     )
     image = models.ImageField(
@@ -112,7 +106,7 @@ class Recipe(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.SET_DEFAULT,
-        default=1,
+        default=get_first_user_id,
         related_name='recipes'
     )
     time = models.PositiveIntegerField(
@@ -155,6 +149,11 @@ class Recipe(models.Model):
 
     objects = RecipeQuerySet.as_manager()
 
+    class Meta:
+        verbose_name = 'Recipe instance'
+        verbose_name_plural = 'Recipes instances'
+        ordering = ['-pub_date', ]
+
     def save(self, *args, **kwargs):
         """
         Trying to build a better slug
@@ -162,11 +161,11 @@ class Recipe(models.Model):
         if not self.slug:
             self.slug = slugify(self.title + '-' + str(date.today()))
         try:
-            super(Recipe, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
         except IntegrityError:
             self.slug = slugify(
                 self.title + str(date.today()) + str(uuid.uuid1())[:8])
-            super(Recipe, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('recipes:recipe-detail', args=[self.slug, ])
@@ -174,13 +173,11 @@ class Recipe(models.Model):
     def __str__(self):
         return self.title
 
-    class Meta:
-        verbose_name = 'Recipe instance'
-        verbose_name_plural = 'Recipes instances'
-        ordering = ['-pub_date', ]
-
 
 class RecipeIngredient(models.Model):
+    """
+    A recipe-ingredient M2M relation model with count value.
+    """
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -191,9 +188,6 @@ class RecipeIngredient(models.Model):
         on_delete=models.CASCADE,
     )
     count = models.PositiveIntegerField(
-        blank=False,
-        null=False,
-        default=0,
         validators=[MinValueValidator(1)]
     )
 
@@ -217,9 +211,6 @@ class Favorite(models.Model):
         verbose_name='Recipe',
     )
 
-    def __str__(self):
-        return f'Liked {self.recipe} of {self.user}'
-
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -229,6 +220,9 @@ class Favorite(models.Model):
         ]
         verbose_name = 'Favorites object'
         verbose_name_plural = 'Favorites objects'
+
+    def __str__(self):
+        return f'Liked {self.recipe} of {self.user}'
 
 
 class Follow(models.Model):

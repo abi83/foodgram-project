@@ -48,7 +48,7 @@ class Api {
           return Promise.reject(e.statusText)
       })
   }
-  // TODO: ask what is going on here. Where is catch?
+  // TODO: what is going on here. Where is catch?
   removePurchases (id){
     return fetch(`/api/v1/cart/${id}`, {
       method: 'DELETE',

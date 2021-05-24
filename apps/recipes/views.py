@@ -59,7 +59,7 @@ class BaseRecipeList(RecipeAnnotateMixin, ListView):
         query_set = (super().get_queryset()
                      .defer('description')
                      .filter(is_active=True))
-        tags = self.request.GET.get('tags', None)
+        tags = self.request.GET.get('tags')
         if tags is None:
             return query_set
         filter_query = Q()

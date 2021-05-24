@@ -8,7 +8,7 @@ class FixedPaginator(Paginator):
     """
     def validate_number(self, number):
         try:
-            return super(FixedPaginator, self).validate_number(number)
+            return super().validate_number(number)
         except EmptyPage:
             if number > 1 or number == 0:
                 return self.num_pages

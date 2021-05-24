@@ -4,6 +4,8 @@ from io import BytesIO
 from django.conf import settings
 from django.http import HttpResponse
 from django.template.loader import get_template
+from django.contrib.auth import get_user_model
+
 from xhtml2pdf import pisa
 
 
@@ -43,3 +45,8 @@ def render_to_pdf(template_src, context_dict=None):
     if not pdf.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return None
+
+
+def get_first_user_id():
+    User = get_user_model()
+    return User.objects.filter(is_superuser=True)[0].pk
