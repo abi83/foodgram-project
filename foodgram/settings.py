@@ -1,3 +1,4 @@
+# flake8: noqa
 from pathlib import Path
 import os
 
@@ -10,8 +11,6 @@ SECRET_KEY = 'django-insecure-(1u^prp0o-bdt_m%cb5)#o8bb@ksft8a##0q8g)+lxg0_la-57
 DEBUG = False
 
 ALLOWED_HOSTS = []
-
-
 
 INSTALLED_APPS = [
     'django.contrib.auth',  # before apps.users

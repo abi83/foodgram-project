@@ -128,9 +128,12 @@ class Cart(BaseRecipeList):
 
     def get_queryset(self):
         if not self.request.user.is_authenticated:
-            cart_ids = self.request.session.get('cart') if self.request.session.get('cart') else []
+            cart_ids = (self.request.session.get('cart')
+                        if self.request.session.get('cart')
+                        else [])
             return Recipe.objects.filter(id__in=cart_ids)
-        return Recipe.objects.filter(carts__in=CartItem.objects.filter(user=self.request.user))
+        return Recipe.objects.filter(
+            carts__in=CartItem.objects.filter(user=self.request.user))
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """
@@ -182,8 +185,7 @@ class RecipeIngredientSaveMixin(LoginRequiredMixin):
         objs = [RecipeIngredient(
             recipe=recipe,
             ingredient_id=ingredients_dic[value],
-            count=request_data.get('valueIngredient_' + key.split('_')[1]),
-            )
+            count=request_data.get('valueIngredient_' + key.split('_')[1]),)
             for key, value in request_data.items()
             if key.startswith('nameIngredient_')
         ]

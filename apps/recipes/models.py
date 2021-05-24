@@ -124,6 +124,7 @@ class Recipe(models.Model):
         null=True,
         help_text='Fill in the description'
     )
+    # TODO: refactor this!
     tag_breakfast = models.BooleanField(
         default=False,
         verbose_name='Breakfast',

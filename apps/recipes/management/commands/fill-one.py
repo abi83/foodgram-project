@@ -64,5 +64,6 @@ class Command(BaseCommand):
                         )
                     ingredients = []
                 line_number += 1
-                Progress.show_progress(line_number/lines_count, 'Ingredients')
+                Progress.show_progress(line_number / lines_count,
+                                       'Ingredients')
         Progress.report_success(created_counter, 'Ingredients')

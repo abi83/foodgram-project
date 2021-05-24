@@ -1,6 +1,6 @@
 from django import forms
 
-from apps.recipes.models import Recipe, Ingredient
+from apps.recipes.models import Recipe
 
 
 class RecipeForm(forms.ModelForm):
@@ -25,7 +25,7 @@ class RecipeForm(forms.ModelForm):
             'time': forms.TextInput(
                 attrs={'class': 'form__input'}, ),
             'description': forms.Textarea(
-                attrs={'class': 'form__textarea', 'rows': 8,}),
+                attrs={'class': 'form__textarea', 'rows': 8, }),
             'tag_breakfast': forms.CheckboxInput(
                 attrs={'class': 'tags__checkbox tags__checkbox_style_orange'}),
             'tag_lunch': forms.CheckboxInput(

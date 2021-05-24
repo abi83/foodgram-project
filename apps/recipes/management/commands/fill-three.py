@@ -21,7 +21,8 @@ class Command(BaseCommand):
     RECIPES = 50
 
     def add_arguments(self, parser):
-        parser.add_argument('number', nargs='?', type=int, default=self.RECIPES)
+        parser.add_argument('number', nargs='?', type=int,
+                            default=self.RECIPES)
 
     @staticmethod
     def populate_recipes(number):
@@ -40,7 +41,9 @@ class Command(BaseCommand):
             for n in range(random.randint(2, 10)):
                 ingredient = fuzzy.FuzzyChoice(Ingredient.objects.all())
                 count = fuzzy.FuzzyInteger(1, 40)
-                RecipeIngredientFactory.create(recipe=recipe, ingredient=ingredient, count=count)
+                RecipeIngredientFactory.create(recipe=recipe,
+                                               ingredient=ingredient,
+                                               count=count)
             i += 1
         Progress.report_success(len(recipes), 'Recipe-Ingredient')
 
