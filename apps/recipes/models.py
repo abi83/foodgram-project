@@ -71,6 +71,22 @@ class Ingredient(models.Model):
         return self.name
 
 
+class Tag(models.Model):
+    name = models.CharField(
+        max_length=30,
+        unique=True,
+        verbose_name='Recipe tag name',
+    )
+    slug = models.CharField(
+        max_length=30,
+        unique=True,
+        null=False,
+        verbose_name='Tag slug for forms and imputs'
+    )
+    def __str__(self):
+        return self.name
+
+
 class RecipeQuerySet(models.QuerySet):
     def annotate_with_favorite_and_cart_prop(self, user_id: int):
         return self.annotate(is_favorite=Exists(
@@ -124,21 +140,9 @@ class Recipe(models.Model):
         null=True,
         help_text='Fill in the description',
     )
-    # TODO: refactor this!
-    tag_breakfast = models.BooleanField(
-        default=False,
-        verbose_name='Breakfast',
-        help_text='Select if this recipe is suitable for breakfast'
-    )
-    tag_lunch = models.BooleanField(
-        default=False,
-        verbose_name='Lunch',
-        help_text='Select if this recipe is suitable for lunch',
-    )
-    tag_dinner = models.BooleanField(
-        default=False,
-        verbose_name='Dinner',
-        help_text='Select if this recipe is suitable for dinner',
+    tags = models.ManyToManyField(
+        Tag,
+        blank=True,
     )
     pub_date = models.DateTimeField(
         verbose_name='Publication date',

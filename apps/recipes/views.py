@@ -33,10 +33,11 @@ class RecipeAnnotateMixin:
             return query_set.select_related(
                 'author'
             ).annotate_with_favorite_and_cart_prop(
-                user_id=self.request.user.id)
+                user_id=self.request.user.id
+            ).prefetch_related('tags')
         return query_set.select_related('author').annotate_with_session_data(
             self.request.session.get('cart')
-        )
+            ).prefetch_related('tags')
 
 
 class BaseRecipeList(RecipeAnnotateMixin, ListView):

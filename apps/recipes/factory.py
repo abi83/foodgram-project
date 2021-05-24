@@ -35,26 +35,14 @@ class RecipeFactory(django.DjangoModelFactory):
         sentences = random.randint(2, 7)
         return ' '.join(fake.paragraphs(nb=sentences))
 
-    @factory.lazy_attribute
-    def tag_breakfast(self):
-        return Faker().pybool()
-
-    @factory.lazy_attribute
-    def tag_lunch(self):
-        return Faker().pybool()
-
-    @factory.lazy_attribute
-    def tag_dinner(self):
-        return Faker().pybool()
-
     @factory.post_generation
-    def ingredients(self, create, extracted):
+    def tags(self, create, extracted):
         if not create:
             return
         if extracted:
-            for ingredient in extracted:
-                if random.random() < 0.01:
-                    self.ingredients.add(ingredient)
+            for tag in extracted:
+                if random.random() < 0.3:
+                    self.tags.add(tag)
 
     class Meta:
         model = Recipe

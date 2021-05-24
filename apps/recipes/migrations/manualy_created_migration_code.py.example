@@ -1,0 +1,19 @@
+# def forwards_func(apps, schema_editor):
+#     Tag = apps.get_model("recipes", "Tag")
+#     db_alias = schema_editor.connection.alias
+#     Tag.objects.using(db_alias).bulk_create([
+#         Tag(name="Завтрак", ),
+#         Tag(name="Обед",),
+#         Tag(name="Ужин", ),
+#     ])
+#
+#
+# def reverse_func(apps, schema_editor):
+#     Tag = apps.get_model("recipes", "Tag")
+#     db_alias = schema_editor.connection.alias
+#     Tag.objects.using(db_alias).filter(name="Завтрак",).delete()
+#     Tag.objects.using(db_alias).filter(name="Обед",).delete()
+#     Tag.objects.using(db_alias).filter(name="Ужин", ).delete()
+#
+#
+# migrations.RunPython(forwards_func, reverse_func),
