@@ -117,12 +117,12 @@ class Recipe(models.Model):
         Ingredient,
         through='RecipeIngredient',
         blank=True,
-        help_text='Fill out some ingredients and it"s values'
+        help_text='Fill out some ingredients and it\'s values'
     )
     description = models.TextField(
         blank=True,
         null=True,
-        help_text='Fill in the description'
+        help_text='Fill in the description',
     )
     # TODO: refactor this!
     tag_breakfast = models.BooleanField(
@@ -141,7 +141,7 @@ class Recipe(models.Model):
         help_text='Select if this recipe is suitable for dinner',
     )
     pub_date = models.DateTimeField(
-        verbose_name='Дата публикации',
+        verbose_name='Publication date',
         auto_now_add=True,
     )
     is_active = models.BooleanField(

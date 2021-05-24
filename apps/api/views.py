@@ -30,7 +30,7 @@ class IngredientList(generics.ListAPIView):
             db_query = Q()
             for word in words:
                 db_query &= Q(name__contains=word.lower())
-            return Ingredient.objects.all().filter(db_query)[:30]
+            return Ingredient.objects.filter(db_query)[:30]
         return Ingredient.objects.all()
 
 
@@ -65,43 +65,49 @@ class SubscriptionApi(generics.CreateAPIView, generics.DestroyAPIView):
 class CartAPI(APIView):
     permission_classes = [AllowAny, ]
     resp_mesg = {
-        201: 'successfully created',
-        400: 'recipe already in shop list',
+        status.HTTP_201_CREATED: 'successfully created',
+        status.HTTP_400_BAD_REQUEST: 'recipe already in shop list',
         200: 'successfully deleted',
     }
 
     def post(self, request, *args, **kwargs):
-        recipe = Recipe.objects.get(slug=request.data.get('recipe_slug'))
+        recipe = get_object_or_404(Recipe,
+                                   slug=request.data.get('recipe_slug'))
         if request.user.is_authenticated:
             _, created = CartItem.objects.get_or_create(
                 user=self.request.user,
                 recipe=recipe)
             if created:
-                return Response({'status': self.resp_mesg[201]},
-                                status=status.HTTP_201_CREATED)
-            return Response({'status': self.resp_mesg[400]},
-                            status=status.HTTP_400_BAD_REQUEST)
+                resp_status = status.HTTP_201_CREATED
+                return Response({'status': self.resp_mesg[resp_status]},
+                                status=resp_status)
+            resp_status = status.HTTP_400_BAD_REQUEST
+            return Response({'status': self.resp_mesg[resp_status]},
+                            status=resp_status)
         if request.session.get('cart') is None:
             request.session['cart'] = [recipe.pk, ]
         else:
             if recipe.pk in request.session['cart']:
-                return Response({'status': self.resp_mesg[400]},
-                                status=status.HTTP_400_BAD_REQUEST)
+                resp_status = status.HTTP_400_BAD_REQUEST
+                return Response({'status': self.resp_mesg[resp_status]},
+                                status=resp_status)
             request.session['cart'].append(recipe.pk)
             request.session.modified = True
-        return Response({'status': self.resp_mesg[201]},
-                        status=status.HTTP_201_CREATED)
+        resp_status = status.HTTP_201_CREATED
+        return Response({'status': self.resp_mesg[resp_status]},
+                        status=resp_status)
 
     def delete(self, request, *args, **kwargs):
+        resp_status = status.HTTP_200_OK
         if request.user.is_authenticated:
             get_object_or_404(CartItem,
                               user=self.request.user,
                               recipe__slug=kwargs.get('recipe_slug'),
                               ).delete()
-            return Response({'status': self.resp_mesg[200]},
-                            status=status.HTTP_200_OK)
+            return Response({'status': self.resp_mesg[resp_status]},
+                            status=resp_status)
         recipe = get_object_or_404(Recipe, slug=kwargs.get('recipe_slug'))
         request.session['cart'].remove(recipe.pk)
         request.session.modified = True
-        return Response({'status': self.resp_mesg[200]},
-                        status=status.HTTP_200_OK)
+        return Response({'status': self.resp_mesg[resp_status]},
+                        status=resp_status)
