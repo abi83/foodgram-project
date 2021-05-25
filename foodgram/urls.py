@@ -4,13 +4,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from foodgram.views import Handler404, Handler500
+from foodgram.views import About, Handler404, Handler500, Tech
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.recipes.urls', namespace='recipes')),
     path('api/', include('apps.api.urls', namespace='api')),
     path('user/', include('apps.users.urls')),
+    path('about/', About.as_view(), name='about'),
+    path('tech/', Tech.as_view(), name='tech'),
 ]
 
 handler404 = Handler404.as_view() # noqa

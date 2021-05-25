@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Об авторе{% endblock %}
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="main__header">
+    <h1 class="main__title">Об авторе</h1>
+  </div>
+  <div class="custom-center-block">
+    <p class="custom-text-block">Меня зовут Владимир, мне 37 лет и это мой дипломны проект курса python developer от Яндекс.Практикум</p>
+    <div class="custom-button-block">
+      <a class="button button_style_blue" href="{% url 'recipes:index' %}">
+        Перейти на главную
+      </a>
+    </div>
+  </div>
+
+{% endblock %}

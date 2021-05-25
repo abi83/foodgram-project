@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Об авторе{% endblock %}
+{% load static %}
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'pages/index.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="main__header">
+    <h1 class="main__title">Технологии</h1>
+  </div>
+  <div class="custom-center-block">
+    <p class="custom-text-block">
+      В этом проекте были использованы следующие технологии:
+    </p>
+      <ul>
+        <li>Django 3.2</li>
+        <li>PSQL</li>
+        <li>DRF and API</li>
+      </ul>
+    <div class="custom-button-block">
+      <a class="button button_style_blue" href="{% url 'recipes:index' %}">
+        Перейти на главную
+      </a>
+    </div>
+  </div>
+
+{% endblock %}

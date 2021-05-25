@@ -1,5 +1,4 @@
 import datetime
-import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -20,7 +19,6 @@ from apps.recipes.paginator import FixedPaginator
 from apps.recipes.utils import render_to_pdf
 
 User = get_user_model()
-logger = logging.getLogger('foodgram')
 
 
 class RecipeAnnotateMixin:
@@ -55,7 +53,7 @@ class BaseRecipeList(RecipeAnnotateMixin, ListView):
     def get_queryset(self):
         """
         Filter by tag_breakfast, tag_lunch, tag_dinner
-        URL example: http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
+        URL example: http://localhost/?tags=breakfast,lunch,dinner
         """
         query_set = (super().get_queryset()
                      .defer('description')
