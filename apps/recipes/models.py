@@ -12,8 +12,6 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.text import slugify
 
-from apps.recipes.utils import get_first_user_id
-
 User = get_user_model()
 
 
@@ -57,7 +55,7 @@ class Ingredient(models.Model):
     unit = models.ForeignKey(
         Unit,
         on_delete=models.RESTRICT,
-        related_name='Ingredient',
+        related_name='ingredients',
         verbose_name='Ingredient unit',
         help_text='Unit for current Ingredient',
     )
@@ -80,7 +78,6 @@ class Tag(models.Model):
     slug = models.CharField(
         max_length=30,
         unique=True,
-        null=False,
         verbose_name='Tag slug for forms and imputs'
     )
 
@@ -122,8 +119,8 @@ class Recipe(models.Model):
     )
     author = models.ForeignKey(
         User,
-        on_delete=models.SET_DEFAULT,
-        default=get_first_user_id,
+        on_delete=models.SET_NULL(),
+        null=True,
         related_name='recipes'
     )
     time = models.PositiveIntegerField(
@@ -160,6 +157,9 @@ class Recipe(models.Model):
         verbose_name_plural = 'Recipes instances'
         ordering = ['-pub_date', ]
 
+    def __str__(self):
+        return self.title
+
     def save(self, *args, **kwargs):
         """
         Trying to build a better slug
@@ -175,9 +175,6 @@ class Recipe(models.Model):
 
     def get_absolute_url(self):
         return reverse('recipes:recipe-detail', args=[self.slug, ])
-
-    def __str__(self):
-        return self.title
 
 
 class RecipeIngredient(models.Model):

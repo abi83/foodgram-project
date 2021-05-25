@@ -4,10 +4,6 @@ from apps.recipes.models import Recipe
 
 
 class RecipeForm(forms.ModelForm):
-    def clean(self):
-        cleaned_data = super().clean()
-        return cleaned_data
-        # TODO: validate minimum one ingredient is checked
     tags = forms.CheckboxSelectMultiple()
 
     class Meta:

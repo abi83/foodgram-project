@@ -44,8 +44,3 @@ def render_to_pdf(template_src, context_dict=None):
     if not pdf.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return None
-
-
-def get_first_user_id():
-    User = get_user_model()
-    return User.objects.filter(is_superuser=True)[0].pk
