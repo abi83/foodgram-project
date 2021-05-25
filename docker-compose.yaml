@@ -12,8 +12,7 @@ services:
     env_file:
       - ./.env
   web:
-    build: .
-#    image: vkromm/yamdb_final_web:latest
+    image: vkromm/foodgram:latest
     restart: always
     volumes:
       - static_value:/code/staticfiles/
