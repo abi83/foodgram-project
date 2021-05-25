@@ -75,30 +75,30 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'WARNING',
-#             'class': 'logging.FileHandler',
-#             'filename': str(BASE_DIR) + '/loggers/main.log',
-#             'formatter': 'verbose',
-#         },
-#     },
-#     'loggers': {
-#         'foodgram': {
-#             'handlers': ['file', ],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-#     'formatters': {
-#         'verbose': {
-#             'format': '%(levelname)s %(asctime)s %(module)s: %(message)s'
-#         }
-#     },
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': str(BASE_DIR) + '/loggers/main.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'foodgram': {
+            'handlers': ['file', ],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s: %(message)s'
+        }
+    },
+}
 
 gettext_noop = lambda x: x
 
