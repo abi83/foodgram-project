@@ -4,3 +4,4 @@ django-debug-toolbar      # debug
 coverage                  # test coverage
 flake8                    # code linter
 isort                     # imports sort
+pytest                    # tests
