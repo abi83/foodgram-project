@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 from faker import Faker
 
-from apps.recipes.models import Unit, Ingredient
+from apps.recipes.models import Ingredient, Unit
 
 User = get_user_model()
 

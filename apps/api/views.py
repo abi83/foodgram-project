@@ -5,9 +5,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from apps.api.serializers import (IngredientSerializer, FavoriteSerializer,
+from apps.api.serializers import (FavoriteSerializer, IngredientSerializer,
                                   SubscribeSerializer)
-from apps.recipes.models import Ingredient, Favorite, Recipe, Follow, CartItem
+from apps.recipes.models import CartItem, Favorite, Follow, Ingredient, Recipe
 
 
 class IngredientList(generics.ListAPIView):

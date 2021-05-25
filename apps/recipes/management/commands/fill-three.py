@@ -9,7 +9,6 @@ from apps.recipes.factory import RecipeFactory, RecipeIngredientFactory
 from apps.recipes.models import Ingredient, Recipe, Tag
 from foodgram.utils.progress import Progress
 
-
 User = get_user_model()
 
 logger = logging.getLogger('foodgram')

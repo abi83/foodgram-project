@@ -2,10 +2,9 @@ import os
 from io import BytesIO
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.template.loader import get_template
-from django.contrib.auth import get_user_model
-
 from xhtml2pdf import pisa
 
 

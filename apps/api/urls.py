@@ -1,7 +1,7 @@
 from django.urls import path
 
-from apps.api.views import (IngredientList, FavoritesApi,
-                            SubscriptionApi, CartAPI)
+from apps.api.views import (CartAPI, FavoritesApi, IngredientList,
+                            SubscriptionApi)
 
 app_name = 'api'
 urlpatterns = [

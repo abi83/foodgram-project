@@ -1,10 +1,10 @@
 from django.conf import settings
+from django.conf.urls import handler404, handler500  # noqa
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
-from django.conf.urls import handler404, handler500  # noqa
-from apps.recipes.views import Handler404, Handler500
+from django.urls import include, path
 
+from foodgram.views import Handler404, Handler500
 
 urlpatterns = [
     path('admin/', admin.site.urls),

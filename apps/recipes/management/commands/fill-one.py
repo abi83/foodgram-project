@@ -5,7 +5,7 @@ import os
 from django.core.management.base import BaseCommand
 from django.db.utils import IntegrityError
 
-from apps.recipes.models import Unit, Ingredient
+from apps.recipes.models import Ingredient, Unit
 from foodgram.utils.progress import Progress
 
 logger = logging.getLogger('foodgram')

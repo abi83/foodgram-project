@@ -1,5 +1,5 @@
-from abc import ABC
 import sys
+from abc import ABC
 
 from django.core.management.base import BaseCommand, OutputWrapper
 from django.core.management.color import color_style

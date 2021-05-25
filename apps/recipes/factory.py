@@ -2,12 +2,12 @@ import random
 import uuid
 
 import factory
-from PIL.ImageColor import colormap
 from django.contrib.auth import get_user_model
 from factory import django, fuzzy
 from faker import Faker
+from PIL.ImageColor import colormap
 
-from apps.recipes.models import Recipe, Ingredient, RecipeIngredient
+from apps.recipes.models import Ingredient, Recipe, RecipeIngredient
 from apps.users.factory import UserFactory
 
 User = get_user_model()
