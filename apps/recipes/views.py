@@ -35,7 +35,7 @@ class RecipeAnnotateMixin:
             ).prefetch_related('tags')
         return query_set.select_related('author').annotate_with_session_data(
             self.request.session.get('cart')
-            ).prefetch_related('tags')
+        ).prefetch_related('tags')
 
 
 class BaseRecipeList(RecipeAnnotateMixin, ListView):
@@ -190,8 +190,8 @@ class RecipeIngredientSaveMixin(LoginRequiredMixin):
 
 class RecipeRightsCheckMixin(UserPassesTestMixin):
     def test_func(self):
-        return (self.request.user.is_superuser
-                or self.request.user == self.get_object().author)
+        return ((self.request.user.is_superuser
+                 ) or (self.request.user == self.get_object().author))
 
 
 class RecipeEdit(RecipeRightsCheckMixin, RecipeIngredientSaveMixin,
@@ -236,9 +236,9 @@ class Feed(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         three_recipes_id_subquery = Subquery(
-            Recipe.objects
-                .filter(author_id=OuterRef('author_id'))
-                .values_list('id', flat=True)[:3])
+            Recipe.objects.filter(
+                author_id=OuterRef('author_id')
+            ).values_list('id', flat=True)[:3])
         prefetch = Prefetch(
             'recipes',
             queryset=Recipe.objects.filter(id__in=three_recipes_id_subquery), )

@@ -97,7 +97,7 @@ class RecipeQuerySet(models.QuerySet):
         recipes_ids = recipes_ids if recipes_ids is not None else []
         return self.annotate(
             in_cart=Case(When(id__in=recipes_ids, then=True))
-            ).annotate(is_favorite=Value(False))
+        ).annotate(is_favorite=Value(False))
 
 
 class Recipe(models.Model):

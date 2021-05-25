@@ -14,8 +14,8 @@ class Progress(BaseCommand, ABC):
         width = 40
         points = int(width * progress)
         backspaces = width - points
-        bar = ('[' + '.' * points + ' ' * backspaces + '] '
-               + str(int(progress * 100)) + ' %')
+        bar = ('[' + '.' * points + ' ' * backspaces + '] ' + str(
+            int(progress * 100)) + ' %')
         text = f'Populating {instance_name} '.ljust(25)
         cls.stdout.write(
             cls.style.SUCCESS(text + bar),
