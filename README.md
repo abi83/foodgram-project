@@ -16,3 +16,6 @@ add any recipe in shop-list. Pdf with ingredients to by - is a very cool idea!
 6. Fixtures generated automatically
 7. Different approaches in api: slug, id and query requests
 8. Session based cart
+
+Project is temporal running on:
+http://178.154.209.27/

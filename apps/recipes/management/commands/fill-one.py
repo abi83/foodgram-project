@@ -17,13 +17,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with open(
-                os.getcwd() + '\\apps\\recipes'
-                              '\\fixtures_data\\ingredients.csv',
+                os.getcwd() + '/apps/recipes'
+                              '/fixtures_data/ingredients.csv',
                 encoding="utf-8") as file:
             lines_count = sum(1 for _ in file)
         with open(
-                os.getcwd() + '\\apps\\recipes'
-                              '\\fixtures_data\\ingredients.csv',
+                os.getcwd() + '/apps/recipes'
+                              '/fixtures_data/ingredients.csv',
                 encoding="utf-8") as file:
             csv_data = csv.reader(file)
             ingredients = []
