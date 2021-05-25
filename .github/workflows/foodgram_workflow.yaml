@@ -56,7 +56,7 @@ jobs:
        username: ${{ secrets.HOST_USER }}
        key: ${{ secrets.SSH_KEY }}
        script: |
-         sudo docker-compose -f /home/abi/yamdb_final/docker-compose.yaml up --build -d
+         sudo docker-compose -f ~/foodgram-project/docker-compose.yaml up --build -d
 
   send_message:
    runs-on: ubuntu-latest

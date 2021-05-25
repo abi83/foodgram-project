@@ -10,5 +10,5 @@ RUN pip3 install -r requirements.txt
 
 COPY . /code
 
-ARG DJANGO_ENV=prod_settings
+ARG DJANGO_ENV=prod_settings2sa
 ENV DJANGO_SETTINGS_MODULE=foodgram.${DJANGO_ENV}
