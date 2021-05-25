@@ -5,7 +5,7 @@ REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
         'rest_framework.renderers.JSONRenderer',
     )
 
-# LOGGING['handlers']['file']['level'] = 'WARNING'
+LOGGING['handlers']['file']['level'] = 'WARNING'
 
 ALLOWED_HOSTS += [
     '178.154.209.27',
