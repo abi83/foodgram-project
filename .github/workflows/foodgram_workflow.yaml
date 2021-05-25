@@ -22,8 +22,8 @@ jobs:
     - name: Lint with flake8
       run: flake8 .
 
-    - name: Test app
-      run: python manage.py test
+    - name: Run tests with pytest
+      run: pytest
 
   build_and_push_to_docker_hub:
     name: Push Docker image to Docker Hub
