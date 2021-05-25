@@ -1,4 +1,5 @@
 django
+pytest-django
 djangorestframework
 Pillow
 sorl-thumbnail
