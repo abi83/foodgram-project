@@ -9,6 +9,7 @@ LOGGING['handlers']['file']['level'] = 'WARNING'
 
 ALLOWED_HOSTS += [
     '178.154.209.27',
+    'localhost',
 ]
 
 DATABASES = {
