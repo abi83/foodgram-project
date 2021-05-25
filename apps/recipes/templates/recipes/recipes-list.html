@@ -29,7 +29,7 @@
     {% endfor %}
   </div>
   {% if page_obj.has_other_pages %}
-    {% include 'paginator.html' with page_obj=page_obj %}
+    {% include 'includes/paginator.html' with page_obj=page_obj %}
   {% endif %}
   <script>
     const badgeClasses = {

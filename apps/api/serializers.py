@@ -3,13 +3,13 @@ from collections import OrderedDict
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from apps.recipes.models import Ingredient, Favorite, Recipe, Follow
+from apps.recipes.models import Favorite, Follow, Ingredient, Recipe
 
 User = get_user_model()
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    unit = serializers.StringRelatedField()
+    unit = serializers.StringRelatedField(source='unit.name')
 
     class Meta:
         model = Ingredient

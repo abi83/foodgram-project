@@ -1,26 +1,24 @@
 import datetime
-import logging
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Prefetch, Subquery, OuterRef, Count
+from django.db.models import Count, OuterRef, Prefetch, Subquery
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import (ListView, DetailView, CreateView,
-                                  UpdateView, DeleteView, )
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView)
 from django.views.generic.base import View
 from django.views.generic.edit import ModelFormMixin
 
 from apps.recipes.forms import RecipeForm
-from apps.recipes.models import (
-    Recipe, RecipeIngredient, Ingredient, Follow, CartItem, Tag)
+from apps.recipes.models import (CartItem, Follow, Ingredient, Recipe,
+                                 RecipeIngredient, Tag)
 from apps.recipes.paginator import FixedPaginator
 from apps.recipes.utils import render_to_pdf
 
 User = get_user_model()
-logger = logging.getLogger('foodgram')
 
 
 class RecipeAnnotateMixin:
@@ -37,7 +35,7 @@ class RecipeAnnotateMixin:
             ).prefetch_related('tags')
         return query_set.select_related('author').annotate_with_session_data(
             self.request.session.get('cart')
-            ).prefetch_related('tags')
+        ).prefetch_related('tags')
 
 
 class BaseRecipeList(RecipeAnnotateMixin, ListView):
@@ -55,7 +53,7 @@ class BaseRecipeList(RecipeAnnotateMixin, ListView):
     def get_queryset(self):
         """
         Filter by tag_breakfast, tag_lunch, tag_dinner
-        URL example: http://localhost/?tags=tag_breakfast,tag_lunch,tag_dinner
+        URL example: http://localhost/?tags=breakfast,lunch,dinner
         """
         query_set = (super().get_queryset()
                      .defer('description')
@@ -192,8 +190,8 @@ class RecipeIngredientSaveMixin(LoginRequiredMixin):
 
 class RecipeRightsCheckMixin(UserPassesTestMixin):
     def test_func(self):
-        return (self.request.user.is_superuser
-                or self.request.user == self.get_object().author)
+        return ((self.request.user.is_superuser
+                 ) or (self.request.user == self.get_object().author))
 
 
 class RecipeEdit(RecipeRightsCheckMixin, RecipeIngredientSaveMixin,
@@ -238,9 +236,9 @@ class Feed(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         three_recipes_id_subquery = Subquery(
-            Recipe.objects
-                .filter(author_id=OuterRef('author_id'))
-                .values_list('id', flat=True)[:3])
+            Recipe.objects.filter(
+                author_id=OuterRef('author_id')
+            ).values_list('id', flat=True)[:3])
         prefetch = Prefetch(
             'recipes',
             queryset=Recipe.objects.filter(id__in=three_recipes_id_subquery), )
@@ -285,18 +283,3 @@ class ShopList(View):
             content_type='application/pdf',
             headers={'Content-Disposition': f"attachment; filename={filename}"}
         )
-
-
-class Handler404(View):
-    @staticmethod
-    def get(request, exception):  # noqa
-        logger.warning("404: page not found at {}".format(request.path))
-        return render(request, 'misc/404.html',
-                      {'path': request.path}, status=404)
-
-
-class Handler500(View):
-    @staticmethod
-    def dispatch(request, *args, **kwargs):
-        logger.error("500: page is broken {}".format(request.path))
-        return render(request, 'misc/500.html', status=500)

@@ -1,8 +1,8 @@
 from django.urls import path
 
-from apps.recipes.views import (RecipeCreate, RecipeDetail, RecipeEdit,
-                                IndexPage, AuthorRecipes, FavoriteRecipes,
-                                RecipeDelete, Feed, ShopList, Cart)
+from apps.recipes.views import (AuthorRecipes, Cart, FavoriteRecipes, Feed,
+                                IndexPage, RecipeCreate, RecipeDelete,
+                                RecipeDetail, RecipeEdit, ShopList)
 
 app_name = 'recipes'
 urlpatterns = [

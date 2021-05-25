@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, ValidationError
 from django.forms import EmailField
 
-
 User = get_user_model()
 
 

@@ -1,8 +1,10 @@
 django
+pytest-django
 djangorestframework
 Pillow
 sorl-thumbnail
 xhtml2pdf
+psycopg2
 
 #for fixtures and tests
 factory_boy
