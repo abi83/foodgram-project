@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    unit = serializers.StringRelatedField()
+    unit = serializers.StringRelatedField(source='unit.name')
 
     class Meta:
         model = Ingredient

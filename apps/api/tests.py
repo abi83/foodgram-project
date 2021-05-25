@@ -17,7 +17,6 @@ class ApiTests(TestCase):
         cls.unit = Unit.objects.create(name='test-unit', short='t-un')
         cls.unit.save()
 
-
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
