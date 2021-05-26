@@ -165,7 +165,7 @@ class Recipe(models.Model):
         Trying to build a better slug
         """
         if not self.slug:
-            self.slug = slugify(self.title + '-' + str(date.today()))
+            self.slug = slugify(self.title + '-' + str(date.today()))[:60]
         try:
             super().save(*args, **kwargs)
         except IntegrityError:

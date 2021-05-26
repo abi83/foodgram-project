@@ -2,6 +2,7 @@ version: "3.3"
 
 volumes:
   static_value:
+  media_value:
   postgres_data:
 
 services:
@@ -16,6 +17,7 @@ services:
     restart: always
     volumes:
       - static_value:/code/staticfiles/
+      - media_value:/code/media/
     depends_on:
       - db
     env_file:
@@ -28,5 +30,6 @@ services:
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - static_value:/var/html/static/
+      - media_value:
     depends_on:
       - web
