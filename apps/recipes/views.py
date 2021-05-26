@@ -62,7 +62,7 @@ class BaseRecipeList(RecipeAnnotateMixin, ListView):
         if not tags:
             return query_set
         tags_items = Tag.objects.filter(slug__in=tags.split(','))
-        return query_set.filter(tags__in=tags_items)
+        return query_set.filter(tags__in=tags_items).distinct()
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """
