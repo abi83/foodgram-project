@@ -14,7 +14,7 @@
       {% for author in authors %}
         <div class="card-user" data-author="{{ author.pk }}">
           <div class="card-user__header">
-            <a class="link" href="{% url "recipes:author-detail" username=author.username %}">
+            <a class="link" href="{% url "recipes:author-detail" id=author.pk %}">
               <h2 class="card-user__title">{{ author.get_full_name }}</h2>
             </a>
           </div>
@@ -37,7 +37,7 @@
                 </li>
               {% endfor %}
               <li class="card-user__item">
-                <a href="{% url "recipes:author-detail" username=author.username %}" class="card-user__link link">Еще {{ author.recipes_count }} рецептов...</a>
+                <a href="{% url "recipes:author-detail" id=author.pk %}" class="card-user__link link">Еще {{ author.recipes_count }} рецептов...</a>
               </li>
             </ul>
           </div>

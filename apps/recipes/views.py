@@ -99,7 +99,7 @@ class AuthorRecipes(BaseRecipeList):
 
     @property
     def get_user(self):
-        return get_object_or_404(User, username=self.kwargs.get('username'))
+        return get_object_or_404(User, pk=self.kwargs.get('id'))
 
     @property
     def _get_page_title(self):

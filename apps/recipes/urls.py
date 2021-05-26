@@ -24,6 +24,6 @@ urlpatterns = [
          name='recipe-edit'),
     path('detail/<slug:slug>/delete/', RecipeDelete.as_view(),
          name='recipe-delete'),
-    path('author/<slug:username>/', AuthorRecipes.as_view(),
+    path('author/<int:id>/', AuthorRecipes.as_view(),
          name='author-detail'),
 ]
