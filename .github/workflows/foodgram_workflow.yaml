@@ -56,8 +56,9 @@ jobs:
        username: ${{ secrets.HOST_USER }}
        key: ${{ secrets.SSH_KEY }}
        script: |
-         sudo docker-compose -f ~/foodgram-project/docker-compose.yaml pull
+         sudo docker-compose -f ~/foodgram-project/docker-compose.yaml pull web
          sudo docker-compose -f ~/foodgram-project/docker-compose.yaml up --build -d
+         sudo docker image prune -f
 
   send_message:
    runs-on: ubuntu-latest
