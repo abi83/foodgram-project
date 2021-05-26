@@ -6,6 +6,17 @@ from apps.recipes.models import Recipe
 class RecipeForm(forms.ModelForm):
     tags = forms.CheckboxSelectMultiple()
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if not cleaned_data.get('tags'):
+            msg = 'Check at least one tag'
+            self.add_error('tags', msg)
+        if not cleaned_data.get('ingredients'):
+            msg = 'Check at least one ingredient'
+            self.add_error('ingredients', msg)
+        return cleaned_data
+
     class Meta:
         model = Recipe
         exclude = ('slug', 'author', 'is_active',)

@@ -17,7 +17,7 @@
       {% endfor %}
     </div>
     <span class="form__input-info" style="margin-bottom: 0;">Выберите один или несколько тэгов</span>
-    <span class="form__error">{{ form.tag_breakfast.errors }}</span>
+    <span class="form__error">{{ form.tags.errors }}</span>
   </div>
 </div>
 <div class="form__group">
@@ -46,6 +46,8 @@
       {% endfor %}
     </div>
     <span class="form__ingredient-link" id="addIng">Добавить ингредиент</span>
+    <span class="form__error">{{ form.ingredients.errors }}</span>
+
   </div>
 </div>
 <div class="form__group">

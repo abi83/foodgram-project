@@ -40,9 +40,13 @@ class RecipeFactory(django.DjangoModelFactory):
         if not create:
             return
         if extracted:
+            tags_count = 0
             for tag in extracted:
                 if random.random() < 0.3:
+                    tags_count += 1
                     self.tags.add(tag)
+            if tags_count == 0:
+                self.tags.add(extracted[0])
 
     class Meta:
         model = Recipe
