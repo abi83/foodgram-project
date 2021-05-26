@@ -3,10 +3,12 @@
 import os
 import sys
 
+import environ
+
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'foodgram.prod_settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', env('SETTINGS_MODULE'))
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -19,4 +21,6 @@ def main():
 
 
 if __name__ == '__main__':
+    env = environ.Env()
+    environ.Env.read_env(env_file='.env')
     main()

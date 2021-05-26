@@ -5,6 +5,7 @@ Pillow
 sorl-thumbnail
 xhtml2pdf
 psycopg2
+django-environ            #.env file manager
 
 #for fixtures and tests
 factory_boy
