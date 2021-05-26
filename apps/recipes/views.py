@@ -59,7 +59,7 @@ class BaseRecipeList(RecipeAnnotateMixin, ListView):
                      .defer('description')
                      .filter(is_active=True))
         tags = self.request.GET.get('tags')
-        if tags is None:
+        if not tags:
             return query_set
         tags_items = Tag.objects.filter(slug__in=tags.split(','))
         return query_set.filter(tags__in=tags_items)
@@ -84,13 +84,15 @@ class IndexPage(BaseRecipeList):
     """
     A view for index page
     """
-    page_title = 'Recipes'
+    page_title = 'Рецепты'
 
 
 class AuthorRecipes(BaseRecipeList):
     """
     A view for author's recipes page
     """
+    template_name = 'recipes/recipes-list-author.html'
+
     def get_queryset(self):
         return (super().get_queryset()
                 .filter(author=self.get_user))
@@ -103,11 +105,27 @@ class AuthorRecipes(BaseRecipeList):
     def _get_page_title(self):
         return self.get_user.get_full_name()
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """
+        Adding a 'author' and 'follow' to context
+        """
+        follow = False
+        if self.request.user.is_authenticated:
+            follow = Follow.objects.filter(
+                author=self.get_user,
+                follower=self.request.user
+            ).exists()
+        kwargs.update({
+            'author': self.get_user,
+            'follow': follow,
+        })
+        return super().get_context_data(**kwargs)
+
 
 class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
     """List of current user's favorite recipes."""
     template_name = 'recipes/recipes-list.html'
-    page_title = 'Favorites'
+    page_title = 'Избранное'
 
     def get_queryset(self):
         """
@@ -120,7 +138,7 @@ class FavoriteRecipes(LoginRequiredMixin, BaseRecipeList):
 
 class Cart(BaseRecipeList):
     template_name = 'recipes/cart.html'
-    page_title = 'cart'
+    page_title = 'Корзина'
 
     def get_queryset(self):
         if not self.request.user.is_authenticated:

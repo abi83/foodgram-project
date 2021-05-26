@@ -21,11 +21,18 @@
       </li>
     </ul>
   </div>
+  {% if user.is_authenticated and author %}
+    <div class="author-subscribe" data-author="{{ author.pk }}">
+      <p style="padding: 0 0 2em 0;">
+        {% include './includes/subscribe_button.html' %}
+      </p>
+    </div>
+  {% endif %}
   <div class="card-list">
     {% for recipe in recipes %}
       {% include 'recipes/recipe-card.html' %}
     {% empty %}
-      <p class="custom-text-block">No recipes in the page</p>
+      <p class="custom-text-block">Нет рецептов по вашему выбору</p>
     {% endfor %}
   </div>
   {% if page_obj.has_other_pages %}
