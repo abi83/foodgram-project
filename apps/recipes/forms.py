@@ -7,6 +7,16 @@ class RecipeForm(forms.ModelForm):
     tags = forms.CheckboxSelectMultiple()
 
     def clean(self):
+        """
+        'nameIngredient_1': ['курдючное сало'],
+        'valueIngredient_1': ['22'],
+        'unitsIngredient_1': ['г']
+        """
+        for key, value in self.data.items():
+            if key.startswith('valueIngredient_') and int(value) <= 0:
+                msg = 'Количество ингредиента должно быть положительным'
+                self.add_error('ingredients', msg)
+
         cleaned_data = super().clean()
         if not cleaned_data.get('tags'):
             msg = 'Check at least one tag'
