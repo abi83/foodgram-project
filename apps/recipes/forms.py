@@ -20,7 +20,7 @@ class RecipeForm(forms.ModelForm):
             'title': forms.TextInput(
                 attrs={'class': 'form__input'},),
             'time': forms.TextInput(
-                attrs={'class': 'form__input',}, ),
+                attrs={'class': 'form__input', }, ),
             'description': forms.Textarea(
                 attrs={'class': 'form__textarea', 'rows': 8, }),
             'tags': forms.CheckboxSelectMultiple(
