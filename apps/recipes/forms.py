@@ -12,11 +12,15 @@ class RecipeForm(forms.ModelForm):
         'valueIngredient_1': ['22'],
         'unitsIngredient_1': ['г']
         """
+        ingredient_count = 0
         for key, value in self.data.items():
             if key.startswith('valueIngredient_') and int(value) <= 0:
-                msg = 'Количество ингредиента должно быть положительным'
+                msg = 'Ingredient value must be positive'
                 self.add_error('ingredients', msg)
-
+                ingredient_count += 1
+        if ingredient_count == 0:
+            msg = 'Add at least one ingredient'
+            self.add_error('ingredients', msg)
         cleaned_data = super().clean()
         if not cleaned_data.get('tags'):
             msg = 'Check at least one tag'
