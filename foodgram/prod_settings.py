@@ -22,3 +22,5 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'

@@ -56,7 +56,7 @@
   <div class="form__field-group form__field-group_time">
     {{ form.time }}
     <label for="id_time" class="form__label">минут</label>
-    <span class="form__error"></span>
+    <span class="form__error">{{ form.time.errors }}</span>
   </div>
 </div>
 <div class="form__group">
